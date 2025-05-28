@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Homotopy Diagram with f(z)=z²+z⁴ Transformation Centered at (1,0)</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      background: #fff;
+      font-family: Georgia, serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+    }
+    /* Left and right canvas containers */
+    #leftCanvas, #rightCanvas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 300px;
+      height: 300px;
+    }
+    .arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Left: original homotopy curve -->
+    <div id="leftCanvas"></div>
+    <!-- Arrow with math-style "f" -->
+    <div class="arrow">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
+          </marker>
+        </defs>
+        <!-- A slightly curved arrow -->
+        <path d="M15,40 C30,38 50,38 65,40" stroke="black" fill="none" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <!-- Math-style label "f", shifted right (x=42) and higher (y=20) -->
+        <text x="42" y="20" text-anchor="middle" fill="black" font-size="24px" font-style="italic">f</text>
+      </svg>
+    </div>
+    <!-- Right: transformed homotopy curve -->
+    <div id="rightCanvas"></div>
+  </div>
+
+  <script>
+    // Factory function to create a p5 sketch.
+    // The second parameter "transform" (boolean) indicates whether to apply the complex transformation.
+    function makeSketch(containerId, transform) {
+      return function(p) {
+        let a = 0;
+        let progress = 0;
+        const duration = 90;
+        // Automatically start the animation.
+        let animating = true;
+        // Flag to ensure we only trigger the reset once.
+        let finished = false;
+        // Constant c for x-axis shift in the transformed sketch.
+        const c = 0.26;
+        
+        p.setup = function() {
+          p.createCanvas(300, 300).parent(containerId);
+          p.frameRate(30);
+        };
+        
+        // Returns the list of vertices for the original curve.
+        function originalCurveVertices() {
+          let vertices = [];
+          for (let t = -Math.PI; t <= Math.PI; t += 0.02) {
+            let s = 0.4;
+            let fx = s * (1.2 * p.sin(t));
+            let gy = s * (1 / (1 + t * t) - p.cos(t) - 0.4);
+            vertices.push({ x: fx, y: gy });
+          }
+          return vertices;
+        }
+        
+        // Applies f(z)=z^2+z^4 to the point (x,y) where z=x+iy.
+        function fTransform(x, y) {
+          let real = (x * x - y * y) + (x * x * x * x - 6 * x * x * y * y + y * y * y * y);
+          let imag = (2 * x * y) + (4 * x * x * x * y - 4 * x * y * y * y);
+          return { x: real, y: imag };
+        }
+        
+        p.draw = function() {
+          p.background(255);
+          if (transform) {
+            // For the transformed sketch, shift the origin so that f(0) becomes centered.
+            p.translate(p.width/2 - 100, p.height/2);
+            p.scale(100, -100);
+            // Apply additional translation in x-direction by c.
+            p.translate(c, 0);
+          } else {
+            p.translate(p.width/2, p.height/2);
+            p.scale(270, -270);
+            p.drawingContext.lineWidth = 0.002;
+          }
+          
+          // Get the original vertices.
+          let vertices = originalCurveVertices();
+          
+          // Compute the "static" (gray) curve.
+          let staticVertices = vertices.map(v => 
+            transform ? fTransform(v.x, v.y) : { x: v.x, y: v.y }
+          );
+          
+          // Compute the deformed (black) curve.
+          let deformedVertices = vertices.map(v => {
+            let s = 0;
+            let vx = v.x + s;
+            let len = Math.sqrt(vx * vx + v.y * v.y);
+            let eps = 0.1;
+            let r = 1 + (1 - a) * eps / len - (1 - a); 
+            let x = r * vx - s;
+            let y = r * v.y;
+            return transform ? fTransform(x, y) : { x: x, y: y };
+          });
+          
+          // Draw the static curve in gray.
+          p.stroke(200);
+          p.strokeWeight(transform ? 0.01 : 0.005);
+          p.noFill();
+          p.beginShape();
+          staticVertices.forEach(v => {
+            p.vertex(v.x, v.y);
+          });
+          p.endShape();
+          
+          // Update the animation if active.
+          if (animating) {
+            progress++;
+            let tVal = Math.min(progress, duration) / duration;
+            a = tVal;
+            if (progress >= duration && !finished) {
+              finished = true;
+              animating = false;
+              setTimeout(() => {
+                a = 0;
+                progress = 0;
+                finished = false;
+              }, 500);
+            }
+          }
+          
+          // Draw the deformed curve in black.
+          p.stroke(0);
+          p.strokeWeight(transform ? 0.01 : 0.005);
+          p.noFill();
+          p.beginShape();
+          deformedVertices.forEach(v => {
+            p.vertex(v.x, v.y);
+          });
+          p.endShape();
+          
+          // Mark the origin.
+          if (transform) {
+            p.push();
+            p.resetMatrix();  // revert to canvas coordinates
+            // With the right sketch transformations, (0,0) maps to (50 + 0.26*100, 150) = (76,150)
+            p.fill(0);
+            p.noStroke();
+            p.ellipse(76, 150, 5, 5);
+            p.pop();
+          } else {
+            p.push();
+            p.resetMatrix();
+            // For the left sketch, the object coordinate (0,0) is at the canvas center: (150,150)
+            p.fill(0);
+            p.noStroke();
+            p.textSize(18);
+            p.textAlign(p.CENTER, p.CENTER);
+            p.text("x", 150, 150);
+            p.pop();
+          }
+        };
+        
+        // On mouse click, toggle pause/resume.
+        // If the animation is finished, a click resets and restarts it.
+        p.mousePressed = function() {
+          if (progress >= duration) {
+            a = 0;
+            progress = 0;
+            finished = false;
+            animating = true;
+          } else {
+            animating = !animating;
+          }
+        };
+      };
+    }
+    
+    // Create the left sketch (original curve) and the right sketch (transformed curve with f(z)=z^2+z^4).
+    new p5(makeSketch('leftCanvas', false));
+    new p5(makeSketch('rightCanvas', true));
+  </script>
+</body>
+</html>

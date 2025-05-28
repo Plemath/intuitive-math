@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Riemann mapping theorem</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background-color: #fdfdfd;
+      color: #222;
+      line-height: 1.7;
+      font-size: 1.15rem;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: bold;
+    }
+    
+    p {
+      text-align: justify;
+    }
+
+   
+    .centered-list {
+      display: flex;
+      justify-content: center;
+      margin: 0.2rem 0; /* reduced top and bottom margin */
+    }
+    .centered-list ol {
+      text-align: left;
+      margin: 0;
+      padding-left: 1.5rem;
+      margin-left: 4rem;
+    }
+    .centered-list li {
+      margin-bottom: 0.3rem;
+    }
+
+    .centered-list ol li::marker {
+  font-size: 1.3rem; /* Adjust this value as needed */
+    /* Optional: makes the number stand out more */
+}
+    
+    /* Theorem Box Styles */
+    .theorem-box {
+      border-left: 4px solid #3e9a89;
+      background-color: #fff;
+      padding: 1.2rem 1.5rem;
+      margin: 1.9rem 0 1.9rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      font-size: 1.15rem;
+      text-align: justify;
+    }
+    
+    /* Theorem header/label and content now as inline elements */
+    .theorem-box .label {
+      font-weight: bold;
+      display: inline;
+      margin-right: 0.5rem;
+    }
+    
+    .theorem-box .content {
+      font-style: italic;
+      display: inline;
+      /* Remove any left margin */
+      margin-left: 0;
+    }
+    
+    /* Bullet lists inside theorem boxes maintain their own formatting */
+    .theorem-box ul {
+      margin: 0.5rem 0;
+      padding-left: 2rem;
+    }
+    
+    .theorem-box ul li {
+  list-style: disc; /* Use disc bullets */
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  text-indent: 0;
+}
+
+.strong-biholo .centered-list,
+  .strong-biholo ol {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .strong-biholo {
+  padding-bottom: 0.5rem; /* or less */
+}
+    
+    .math-display {
+      text-align: center;
+      margin: 1.2rem 0;
+    }
+    
+    a {
+      text-decoration: underline;
+      color: #222;
+    }
+    
+    a:hover {
+      color: #555;
+    }
+    
+    .iframe-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    
+    .image-container {
+      text-align: center;
+      margin: 2rem auto;
+    }
+    
+    .image-container img {
+      max-width: 50%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    #local-arg-princ,
+    #inf-arg-prin,
+    #perturb{
+      max-width: 75%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+    }
+
+   
+    #rmt{
+      max-width: 50%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+    }
+
+    #angle{
+      max-width: 45%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+    }
+
+    #local-arg {
+  max-width: 43%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+  </style>
+</head>
+<body>
+
+  <h1>Riemann Mapping Theorem</h1>
+<p>
+  The Riemann mapping theorem is one of the most central results in complex analysis. 
+  However, the standard proof [1] lacks intuition. We will see an intuitive proof using ideas from topology and partial differential equations (PDEs). 
+  No background in topology or PDEs is assumed. However, I will state and use (without proof) some theorems from topology that are intuitively obvious, 
+  even though their proofs are nontrivial. I will refer to these theorems as <em>i.o.</em>, and in the 
+  final section I will provide references for their proofs.
+</p>
+
+
+<p>
+  To the hesitant student of mathematics: it is a standard practice among mathematicians to use established <em>i.o.</em> theorems,
+  without having seen the proof. This is because they want to use their time to focus on the more conceptual and creative aspects of their work.
+</p>
+
+
+<p><strong>Prerequisites.</strong> The reader is expected to be familiar with undergraduate complex analysis up to the Cauchy integral formula (e.g., Chapters 1 and 2.1–2.4 from [1]).
+  
+</p>
+
+<p>We begin by introducing some definitions.</p>
+
+<p><strong>Paths and loops.</strong> Let \(a>0\). A continuous function \( p:[0,a] \to \mathbb{C} \) is called a <em>continuous path</em>. If \(p\) is
+  also injective, we call it <em>simple</em>. A continuous path \( p:[0,a] \to \mathbb{C} \) is called a <em>loop</em> if \( p(0) = p(a). \)
+  A simple loop is also called a <em>Jordan curve</em>. Finally, regarding paths that go to infinity, we will only need the following type: 
+  we say that \(p:(0,a) \to \mathbb{C}\) is a <em>simple continuous path that starts and ends at infinity</em> 
+  if \(p\) is continuous and injective, and \( p(t) \to \infty \) as \( t \to 0 \) or \( t \to a \). 
+</p>
+
+<p>We will need the 
+  following i.o. theorem about Jordan curves. If you are unaware of the term <em>connected component</em>, you can see [6].</p>
+
+<div class="theorem-box">
+  <span class="label">Theorem 1.</span>
+  <span class="content">Let \( \ell:[0,a] \rightarrow \mathbb{C} \) be a Jordan curve, and let \( L := \ell([0,a]) \) denote its image. 
+    Then the complement \( \mathbb{C} \setminus L \) consists of exactly two connected components, both of which are open.
+    One of the components is bounded (called the <strong>interior</strong>, denoted \( A_\ell \)), 
+    and the other is unbounded (called the <strong>exterior</strong>, denoted \( E_\ell \)).
+     The curve \( L \) is the boundary of both components. Furthermore, the interior \( A_\ell \) and its closure \(A_\ell \cup L\)
+      are both simply connected.</span>
+</div>
+
+<p>
+Before stating the main theorem, we introduce one more concept. 
+</p>
+<p> <strong>Biholomorphisms.</strong> Let \(A, B\subseteq \mathbb{C}\) be open. If a holomorphism \(f:A\rightarrow B\) is a bijection, then we say that \(f\) is a <em>biholomorphism</em>.
+   We will prove momentarily that if \(f\) is a biholomorphism, then its inverse is holomorphic. If there exists a biholomorphism between two open sets \(A, B\), then
+  we say that \(A\) and \(B\) are <em>biholomorphic</em>. 
+</p>
+
+<div class="theorem-box">
+  <span class="label">Theorem 2 (Riemann mapping theorem).</span>
+ <span class="content">
+Let \( A \subseteq \mathbb{C} \) be non-empty, simply connected, and open. Suppose that \( A \) is not all of \( \mathbb{C} \).
+Then there exists a biholomorphism from \( A \) onto the open unit disc \( D := \{ z \in \mathbb{C} : |z| < 1 \} \).
+</span>
+</div>
+
+<div class="image-container">
+  <img id="inf-arg-prin" src="rmt-fig.png" alt="Illustration of the Jordan curve and indicated directions" />
+  <p style="font-size: 0.95rem; font-style: italic; color: #444; text-align: center; margin-top: 0.5rem;">
+    Example of biholomorphism, as described by the Riemann mapping theorem.
+  </p>
+</div>
+
+<p>
+  We will prove a slightly simplified version of Theorem 2. This is in order to focus on the main ideas, without being distracted by the 
+  technical details needed for the fully general case. In [2], the authors generalize the approach we take here, to prove Theorem 2 in its
+   full generality.
+</p>
+
+<p>
+We prove Theorem 2 under the following assumption:
+</p>
+
+<div class="theorem-box">
+  <span class="label">Assumption.</span>
+  <span class="content">The set \(A\) is either the interior of a Jordan curve (bounded case), 
+    or it has a boundary that is a simple continuous path
+     that starts and ends at infinity (unbounded case).
+  </span>
+</div>
+
+<div class="image-container">
+  <img id="inf-arg-prin" src="assumption.png" alt="Illustration of the Jordan curve and indicated directions" />
+  <p style="font-size: 0.95rem; font-style: italic; color: #444; text-align: center; margin-top: 0.5rem;">
+    A bounded and an unbounded set satisfying our assumption.
+  </p>
+</div>
+
+<p>
+  Note that not all sets \(A\) in Theorem 2 satisfy our assumption, e.g., \(\mathbb{C}\setminus \{z\in \mathbb{C}: Re(z)\ge 0\}\).
+</p>
+
+<p>
+  We will first do the proof for the bounded case. Then, we will prove the unbounded case by a simple reduction to the bounded one.
+</p>
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.7rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+The bounded case
+</h3>
+<p>
+  We will need some tools to attack the bounded case. The first tool is topological and complex-analytic. 
+    It is called <em>the argument principle</em>, and it is covered in 
+    <a href="argument-principle.html">this article</a> of mine. Even if you are familiar with it, 
+    you will most probably benefit from that article, since the proof is fully visual. We will also need two applications of the argument principle, covered 
+    <a href="applications-arg.html">here</a>. Make sure you have understood the material from these articles, before you continue. 
+    
+  </p>
+  <p>
+The third tool is the following theorem:
+ </p>
+<div class="theorem-box">
+  <span class="label">Theorem 3.</span>
+  <span class="content"> Let \( \ell:[0,a] \rightarrow \mathbb{C} \) be a Jordan curve, and let \( L := \ell([0,a]) \) denote its image and \(A\) its interior.
+    Let \(g:L\rightarrow \mathbb{R}\) be a continuous function. Then, there exists a unique function \(u: A \cup L \rightarrow \ \mathbb{R}\) that
+     is continuous on \(A \cup L\), harmonic on \(A\), and equal to \(g\) on \(L\). 
+  </span>
+</div>
+<p>
+  In PDE terms, this theorem says that the Dirichlet problem for the Laplace equation, on a domain bounded by a Jordan curve, has a unique solution.
+  Theorem 3 has a very intuitive proof using <em>probability theory</em>. Even though the full proof requires an advanced concept called <em>Brownian motion</em>,
+  the core idea can be described in elementary terms — and the solution \( u \) can actually be constructed in a fully elementary way!
+  I suggest you accept Theorem 3 as a fact for now and continue with the rest of the article. When you're done,
+   if you're interested in understanding how Theorem 3 is proved, then:
+</p>
+<p>
+
+<ul>
+  <li>If you know the basics of Brownian motion, you can see the proof in [5].</li>
+  <li>If you don’t know anything about Brownian motion, I encourage you to read my <a href="dirichlet-problem.html" style="text-underline-offset: 0.25em;">
+  elementary exposition
+</a> of the proof’s main idea.</li>
+</ul>
+</p>
+  <p>
+Now, let's move on with the proof of the bounded case.
+  </p>
+  
+
+ 
+
+    
+  
+  
+
+
+  <p> Without loss of generality, we assume that \(0\in A\) (otherwise we can just translate \(A\)). We will construct a biholomorphism 
+    that sends zero to zero. First, we need a definition. Let \(\bar{S}\) denote the closure of a set \(S\).
+  </p>
+
+
+  <div class="theorem-box strong-biholo">
+    <span class="label">Definition.</span>
+    <span class="content">Let \( A, B \subseteq \mathbb{C} \) open sets. A function \( f : \bar{A} \to \bar{B} \) is a 
+      <em>strong biholomorphism</em> if
+      <div class="centered-list">
+        <ol>
+          <li>It is a continuous bijection.</li>
+          <li>The restriction \( f|_A \) is a biholomorphism sending \( A \) onto \( B \).</li>
+        </ol>
+      </div>
+    </span>
+  </div>
+<p>
+  The first thing we will do is deduce some properties satisfied by all strong biholomorphisms \(f:\bar{A}\rightarrow \bar{D}\) with \(f(0)=0\). 
+  These properties will give us insight into how to actually <em>construct</em> a biholomorphism from \(A\) onto \(D\) satisfying \(f(0)=0\). This function 
+  will in fact be a strong biholomorphism, but we will not prove this here, as it is not needed for our theorem.
+</p>
+
+
+<div class="theorem-box">
+  <span class="label">Claim 1.</span>
+  <span class="content">Let \(f:\bar{A}\rightarrow \bar{D}\) be a strong biholomorphism with \(f(0)=0\). Then, there exists a holomorphic function 
+    \(H:A\rightarrow \mathbb{C}\) such that \(f(z)=ze^{H(z)}\), for all \(z\in A\). Furthermore, the real part \(\text{Re}(H)\) can be continuously 
+    extended to the closure \(\bar{A}\).
+  </span>
+</div>
+
+<p>
+  Again, it is possible to show that \(\text{Im}(H)\) can also be continuously extended to \(\bar{A}\), which implies that the identity \(f(z)=ze^{H(z)}\) holds on \(\bar{A}\).
+  However, we won't need this fact and so we won't prove it here.
+</p>
+
+<h3 style="
+text-align: center;
+font-size: 1.26rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: underline;
+">
+Proof
+</h3>
+<p>
+  Let \( g : \bar{A} \to \mathbb{C} \) be defined as
+</p>
+
+<div class="math-display">
+  \[
+    g(z) := 
+    \begin{cases}
+      f(z)/z, &  z \in \bar{A} \setminus \{0\} \\
+      f'(0), &  z = 0
+    \end{cases}
+  \]
+</div>
+
+<p>
+  I claim that \( g \) is holomorphic on \( A \) and continuous on \( \bar{A} \).
+  Indeed, locally around zero,
+</p>
+
+<div class="math-display">
+  \[
+    f(z) = f'(0)z + \frac{f''(0)}{2}z^2 + \dots
+  \]
+</div>
+
+<p>
+  Thus, locally around zero,
+</p>
+
+<div class="math-display">
+  \[
+    g(z) = f'(0) + \frac{f''(0)}{2}z + \dots
+  \]
+</div>
+
+<p>
+  So, \( g \) is holomorphic at zero, and clearly it is also holomorphic everywhere else on \( A \).
+  The continuity of \( g \) at points of \( \partial A \) follows from the continuity of \( f \).
+</p>
+
+<p>
+  Now, from Theorem 2 in 
+  <a href="applications-arg.html">this article</a>,
+  we know that \( f' \neq 0 \) on \( A \). Furthermore, since \( f \) is injective, we have \( g \neq 0 \) on \( \bar{A} \).
+  This implies that there exists a holomorphic function \( H : A \to \mathbb{C} \) such that
+  \( g(z) = e^{H(z)}, \) for all \( z \in A \). For a proof of this implication, you can see [4].
+</p>
+
+<p>
+  Let \( u(z) \) and \( v(z) \) be the real and imaginary parts of \( H \). Since \( g \) is continuous on 
+  \( \bar{A} \) and \( u(z) = \ln(|g(z)|) \), the function \( u(z) \) can be continuously extended on \( \bar{A} \).
+  \(\ \square\)
+</p>
+
+<div style="height: 0.3rem;"></div>
+
+<p>Continuing on the setting of Claim 1, we have that on the set \(A\), \(f(z)=ze^{u(z)+iv(z)}\), and so 
+
+  <div class="math-display" id="eq1">
+    \[
+    |f(z)|=|z|e^{u(z)} 
+    
+    \]
+  </div>
+ <p> for all \(z\in A\). Since \(f\) and \(u\) are continuous on \(\bar{A}\), the above equality extends on \(\partial A\). Now, the crucial moment: since
+  \(f\) is a strong biholomorphism, we have \(f(\partial A)=\partial D\). This property actually tells us <em>how to construct the function \(u\).</em>
+  Indeed, since \(|f(z)|=1\) on \(\partial A\), we have that \(u(z)=-\log |z| \), for all \(z\in \partial A\). But \(u\) is the real part of a
+  holomorphic function on \(A\), and thus it is <em>harmonic</em> on \(A\). This means that we can construct \(u\) by solving this Dirichlet problem!
+</p>
+  <h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.35rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Construction of the imaginary part
+</h3>
+<p> 
+  What about \(v\)? We can construct it by using \(u\)! Remember that these are coupled by the Cauchy-Riemann equations: \(u_x=v_y\) and \(u_y=-v_x\).
+  Geometrically, this means that \(\nabla v\) is \(\nabla u\) rotated by \(90^\circ\) counter-clockwise. Since we have \(\nabla v\), we can get
+  \(v\) up to an additive constant:
+  <div class="math-display" id="eq1">
+    \[
+    v(x,y)=\int_\gamma \nabla v(s)\cdot ds + v(0)
+    \]
+  </div>
+  where the above integral is the line integral of \(\nabla v\) along any piecewise-smooth curve \(\gamma\) that starts at zero, ends at \((x,y)\), and 
+  lies entirely inside \(A\).
+</p>
+
+<p> Thus, <em>as long as there exists</em> a strong biholomorphism \(f:\bar{A}\rightarrow \bar{D}\) with \(f(0)=0\), this function \(f\) is uniquely determined
+  up to a rotation (expressed by the constant \(v(0)\)).
+</p>
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.35rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+The biholomorphism
+</h3>
+<p>
+  We now use these insights to construct a biholomorphism from \( A \) onto \( D \). Let \( u \) be the unique function that is harmonic on \( A \), continuous on \( \bar{A} \), and equals \( -\log |z| \) on \( \partial A \). Let
+</p>
+
+<div class="math-display">
+  \[
+    v(x, y) := \int_\gamma (-u_y(s), u_x(s)) \cdot ds
+  \]
+</div>
+
+<p>
+  where \( \gamma \) is any piecewise-smooth curve that starts at the origin, ends at \( (x, y) \), and lies entirely inside \( A \).
+  We will prove that the function \( f : A \to \mathbb{C} \) defined as
+</p>
+
+<div class="math-display">
+  \[
+    f(z) = z e^{u(z) + i v(z)}
+  \]
+</div>
+
+<p>
+  is holomorphic, sends \( A \) onto \(D \), and is injective. The fact that \( f \) is holomorphic is immediate, since \( u \) and \( v \) satisfy the Cauchy-Riemann equations (why?). We now prove the rest.
+</p>
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.35rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+The boundary has all the information
+</h3>
+
+<p>
+  To highlight the main idea, we first do the proof under the assumption that \( f \) can be continuously extended on \( \bar{A} \).
+  We then drop this assumption by tweaking our argument. As I mentioned in <a href="applications-arg.html" style="text-underline-offset: 0.25em;"> this article</a>, whenever
+  I say "argument principle", I mean its general version, given in Corollary 1 of that article.
+
+<p>
+  Let \( \ell : [0,a] \to \mathbb{C} \) be a positively oriented Jordan curve that parametrizes \( \partial A \).
+  By the way we constructed \( u \), we have \( f(\partial A) \subseteq \partial D \), and so the loop \( f \circ \ell \) lies entirely on the unit circle.
+  This implies that \( |f(z)| \leq 1 \) for all \( z \in A \). Indeed, if \( |f(z_0)| > 1 \) for some \( z_0 \in A \),
+  then by the argument principle \( W(f \circ \ell, f(z_0)) \geq 1 \), a contradiction.
+  Since \( f \) is an <a href="applications-arg.html" style="text-underline-offset: 0.25em;">
+  open map
+</a>, we have \( f(A) \subseteq D \).
+</p>
+
+<p>
+  We need to show that \( f \) is onto and injective. We will see that these are also consequences of the argument principle.
+  What is \( W(f \circ \ell, 0) \)? By the argument principle, it equals the number of roots of \( f \) in \( A \), counting multiplicities.
+  Clearly, zero is the only root of \( f \). Combining this with
+</p>
+
+<div class="math-display">
+  \[
+    f'(0) = \lim_{z \to 0} \frac{f(z)}{z} = e^{u(0)} > 0
+  \]
+</div>
+
+<p>
+  we have \( W(f \circ \ell, 0) = 1 \). By Proposition 1 in 
+  <a href="applications-arg.html">this article</a>, we have
+</p>
+
+<div class="math-display">
+  \[
+    W(f \circ \ell, q) = 1
+  \]
+</div>
+
+<p>
+  for all \( q \in D \). By the argument principle, for each \( q \in D \), there exists exactly one \( z \in A \) such that \( f(z) = q \).
+  \(  \ \square\)
+</p>
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.35rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Dropping the continuity assumption
+</h3>
+
+Even if we don't assume that \(f\) can be continuously extended on \( \bar{A} \), we can still use the continuity of \(u\) on the boundary!
+We first prove the following intuitively obvious proposition.
+
+<div class="theorem-box">
+  <span class="label">Proposition 1.</span>
+  <span class="content"> For all \(\delta>0\), there exists a Jordan curve \(\ell_\delta:[0,a]\rightarrow \mathbb{C}\) that lies inside \(A,\) and is such that
+    \(|\ell_\delta (t)-\ell(t)|<\delta\), for all \(t\in [0,a]\).
+  </span>
+</div>
+<p>
+
+  <div style="margin-top: 1rem;">
+  <button onclick="toggleProof(this)" style="
+    font-family: Georgia, serif;
+    font-size: 1.15rem;
+    background: none;
+    border: none;
+    color: #000;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  ">
+    For the proof of Proposition 1, click here.
+  </button>
+  
+  <div class="proof-box" style="
+    display: none;
+    margin-top: 1rem;
+    border-left: 4px solid #888;
+    background: #f9f9f9;
+    padding: 1rem;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    font-family: Georgia, serif;
+    text-align: justify;
+  ">
+    
+
+  Let \( z_0 \in A \), and consider a positively oriented circle
+  \( C_{z_0, \varepsilon}(t) = \varepsilon e^{i 2\pi t} + z_0 \), \( t \in [0,1] \), that lies inside \(A\).
+  By Theorem 2 from 
+  <a href="argument-principle.html" title="this article">this article</a>, 
+  there exists a function \( \gamma : [0,1] \times [0,1] \rightarrow \mathbb{C} \) such that for all \(t\in[0,1]\), \(\gamma(0,t) = C_{z_0, \varepsilon}(t),\  
+ \gamma(1,t) = \ell(at),\) and for all \( s \in (0,1) \), the curve \( \gamma(s, \cdot) \) is a Jordan curve lying inside 
+  \( A \setminus \bar{D}_{z_0, \varepsilon} \). Remember that \( \bar{D}_{z_0, \varepsilon} \) denotes the closed disc centered at \( z_0 \) with radius \( \varepsilon \).
+
+
+<p>
+  Since \( [0,1] \times [0,1] \) is compact, the continuous function \( \gamma \) is in fact uniformly continuous.
+  Thus, for any \( \delta > 0 \), there exists an \( \eta \in (0,1) \) such that
+</p>
+
+<div class="math-display">
+  \[
+    |\gamma(1 - \eta, t) - \gamma(1, t)| < \delta
+  \]
+</div>
+
+
+  for all \( t \in [0,1] \). By setting 
+  \( \ell_\delta(t) := \gamma(1 - \eta, t/a) \) for \( t \in [0,a] \), we are done. \(\ \square \)
+
+
+
+  </div>
+</div>
+
+<script>
+  function toggleProof(button) {
+    const box = button.nextElementSibling;
+    const isVisible = box.style.display === 'block';
+    box.style.display = isVisible ? 'none' : 'block';
+    button.textContent = isVisible ? 'For the proof of Proposition 1, click here.' : 'Hide the proof.';
+  }
+</script>
+<p>
+We now explain why for all small enough \(\delta>0\), the loop \(f\circ \ell_\delta\) is very close to the unit circle.
+Since \(u\) is continuous on the boundary, we can continuously extend \(|f|\) on \(\bar{A}\). 
+Also, since \(\bar{A}\) is compact, \(|f|\) is uniformly continuous on \(\bar{A}\). This implies that for any \(\varepsilon>0\), there is a \(\delta_0>0\), such
+that for all \(\delta\in (0,\delta_0)\), 
+</p>
+
+<div class="math-display">
+  \[
+    1-\varepsilon < |f\circ \ell_\delta (t)|<1+\varepsilon
+  \]
+</div>
+
+<p>
+  Using this fact, we can immediately adapt the proof we did under the continuity assumption. This adaptation is left as an exercise for the reader.
+</p>
+
+
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.7rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+The unbounded case
+</h3>
+<p>
+  Let \( A \) be an unbounded, simply connected, and open subset of \( \mathbb{C} \) that is not the whole \( \mathbb{C} \).
+  Suppose the boundary of \( A \) is a simple continuous path that starts and ends at infinity. 
+  We will construct a simple biholomorphism from \( A \) to a <em>bounded</em>, simply connected, and open subset of \( \mathbb{C} \),
+  whose boundary is a Jordan curve. We proved that such a set is biholomorphic to \( D \). 
+  Thus, we will be able to conclude that \( A \) is biholomorphic to \( D \).
+</p>
+<p>
+  We will use the following i.o. theorem.
+</p>
+
+<div class="theorem-box">
+  <span class="label">Theorem 4.</span>
+  <span class="content"> Let \( p : (0, a) \to \mathbb{C} \) be a simple continuous path that starts and ends at infinity. Let \( A \) be an unbounded, 
+    simply connected, and open set with boundary \( P := p((0, a)) \). Then, \( \mathbb{C} \setminus P \) has exactly two connected components: \( A \) and another set \(B\).
+    The set \( B \) is also unbounded, simply connected, and open.
+  </span>
+</div>
+
+<p>
+  We apply this theorem to our setting. Without loss of generality, we assume that \(0\in B\) (otherwise, we can translate \(A\)). Let \(g(z):=1/z\). 
+  By applying \(g\) to the path \(p\), we get a Jordan curve. This is formally expressed by defining \( \tilde{p} : [0, a] \to \mathbb{C} \) as follows:
+</p>
+
+  <div class="math-display">
+    \[
+      \tilde{p}(t) :=
+      \begin{cases}
+        g(p(t)), &  t \in (0, a) \\
+        0, &  t = 0 \text{ or } t = a
+      \end{cases}
+    \]
+  </div>
+<p> Observe that \(\tilde{p}\) is indeed a Jordan curve. By proving the following claim, we complete the proof of the unbounded case.</p>
+
+<div class="theorem-box">
+  <span class="label"> Claim 2.</span>
+  <span class="content"> The set \(g(A)\) is the interior of the Jordan curve \(\tilde{p}\).
+  </span>
+</div>
+
+
+<div style="margin-top: 1rem;">
+  <button onclick="toggleProof(this)" style="
+    font-family: Georgia, serif;
+    font-size: 1.15rem;
+    background: none;
+    border: none;
+    color: #000;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  ">
+    For the proof of Claim 2, click here.
+  </button>
+  
+  <div class="proof-box" style="
+    display: none;
+    margin-top: 1rem;
+    border-left: 4px solid #888;
+    background: #f9f9f9;
+    padding: 1rem;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    font-family: Georgia, serif;
+    text-align: justify;
+  ">
+
+  Remember that continuous functions send connected sets to connected sets. Also, holomorphic functions send open sets to open sets. Thus, \(g(A)\) and \(g(B\setminus\{0\})\) are both open and connected. They are also disjoint.
+  Furthermore, observe that their union is \(\mathbb{C}\setminus \tilde{P}\), where \( \tilde{P}:=\tilde{p}([0,a]) \). Thus, \(g(A)\) and \(g(B\setminus\{0\})\) are the two connected components of \(\mathbb{C}\setminus \tilde{P}\) (why?). 
+  Using Theorem 1 and the fact that \(g(B\setminus\{0\})\) is unbounded, we are done.
+   \(\ \square\)
+
+
+    </div>
+</div>
+
+<script>
+  function toggleProof(button) {
+    const box = button.nextElementSibling;
+    const isVisible = box.style.display === 'block';
+    box.style.display = isVisible ? 'none' : 'block';
+    button.textContent = isVisible ? 'For the proof of Claim 2, click here.' : 'Hide the proof.';
+  }
+</script>
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.35rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+References for the i.o. theorems
+</h3>
+
+<p>
+  For completeness, I provide references for proving the i.o. theorems used in this article, and also in the 
+  <a href="argument-principle.html">one about the argument principle</a>. 
+  As I said in the beginning, even though these theorems are intuitively obvious, their proofs are nontrivial. 
+  Several of them follow from a central theorem in topology called <em>Jordan–Schoenflies</em> (JS) theorem [7].
+</p>
+
+<p>
+  <strong>This article.</strong> Theorem 1 follows from JS (even though the first part is the simplest 
+  <em>Jordan curve theorem</em>). Theorem 4 follows from Theorem 1, by applying the inversion idea that we used for the unbounded case.
+</p>
+
+<p>
+  <strong>Argument principle article.</strong> Theorem 1 is proved using a topological concept called 
+  <em>covering maps</em> (see Chapter 9 of [8]). Theorem 4 also follows immediately from the techniques of that chapter, 
+  and it is the simplest example of a topological fact called <em>Hopf’s Degree Theorem</em> that is valid in any number of dimensions. 
+  Now, about Theorem 2, its first part is proven in Section 65 of [8], and the second part follows from the 
+  <em>Annulus theorem</em> [9], which is a consequence of JS. Finally, Theorem 5 follows from JS.
+</p>
+
+
+<h3 style="margin-top: 3rem; text-align: left;">References</h3>
+<ol style="line-height: 1.6; font-size: 1.05rem;">
+  <li>Complex Analysis, Elias M. Stein and Rami Shakarchi. </li>
+  <li>The Riemann Mapping Theorem from Riemann's Viewpoint, by Robert Greene and Kang-Tae Kim. Note: the authors use Perron's method for the Dirichlet problem. However,
+    the probabilistic solution that we employ here works equally well, as it is shown in [3].
+  </li>
+  <li>Probabilistic techniques in Analysis, by Richard F. Bass. Chapter 2.1.</li>
+  <li>Complex Analysis, Elias M. Stein and Rami Shakarchi. Theorem 6.2, Chapter 3. Even though the theorem is in Chapter 3, a reader having the prerequisites 
+    for this article can understand it.
+  </li>
+  
+  <li>Probability: Theory and Examples, Rick Durrett. Chapter 9.5. You will also need a proof that all the points of a Jordan curve are regular. This is proved in [3], Proposition 1.14.   </li>
+  <li>Complex Analysis, Elias M. Stein and Rami Shakarchi. Chapter 1, exercise 6.a. 
+  </li>
+  <li>An Elementary Proof of the Jordan-Schoenflies Theorem, Stewart S. Cairns. 
+  </li> 
+  <li>
+    Topology, James Munkres (second edition).
+  </li>
+  <li>
+    Knots and Links, Dale Rolfsen, p.11.
+
+  </li>
+</body>
+</html>

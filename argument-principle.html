@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Argument Principle – Intuitive Mathematics</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background-color: #fdfdfd;
+      color: #222;
+      line-height: 1.7;
+      font-size: 1.15rem;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: bold;
+    }
+    
+    p {
+      text-align: justify;
+    }
+    
+    /* Theorem Box Styles */
+    .theorem-box {
+      border-left: 4px solid #3e9a89;
+      background-color: #fff;
+      padding: 1.2rem 1.5rem;
+      margin: 2rem 0 1.2rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      font-size: 1.15rem;
+      text-align: justify;
+    }
+    
+    /* Theorem header/label and content now as inline elements */
+    .theorem-box .label {
+      font-weight: bold;
+      display: inline;
+      margin-right: 0.5rem;
+    }
+    
+    .theorem-box .content {
+      font-style: italic;
+      display: inline;
+      /* Remove any left margin */
+      margin-left: 0;
+    }
+    
+    /* Bullet lists inside theorem boxes maintain their own formatting */
+    .theorem-box ul {
+      margin: 0.5rem 0;
+      padding-left: 2rem;
+    }
+    
+    .theorem-box ul li {
+  list-style: disc; /* Use disc bullets */
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  text-indent: 0;
+}
+
+    
+    .math-display {
+      text-align: center;
+      margin: 1.2rem 0;
+    }
+    
+    a {
+      text-decoration: underline;
+      color: #222;
+    }
+    
+    a:hover {
+      color: #555;
+    }
+    
+    .iframe-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    
+    .image-container {
+      text-align: center;
+      margin: 2rem auto;
+    }
+    
+    .image-container img {
+      max-width: 50%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    #local-arg-princ,
+    #inf-arg-prin,
+    #perturb{
+      max-width: 75%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+    }
+
+    #angle{
+      max-width: 45%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+    }
+
+    #local-arg {
+  max-width: 43%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+  </style>
+</head>
+<body>
+
+  <h1>Argument Principle: visual statement and proof</h1>
+
+  <p>
+    We start by recalling the definition of <em>multiplicity</em> of a root of a holomorphic function.
+    Let \( A \subseteq \mathbb{R}^2 \) open, and let
+    \( f: A \to \mathbb{C} \) be a holomorphic function.
+    Let \( z_0 \in A \) be a root of \(f\), i.e., \( f(z_0) = 0 \). Suppose that not all derivatives \( f^{(k)}(z_0)\) are zero.
+    We call the minimum \(k\) with \( f^{(k)}(z_0)\neq 0 \) the multiplicity of the root \( z_0 \). Note that if all these derivatives were zero and
+     if \(A\) was connected, then \(f\) would be identically zero.
+  </p>
+
+  <p> Before you go over this article, make sure you read the beginning of the Riemann mapping theorem <a href="riemann-mapping.html">article</a>. Specifically, read
+  up until Theorem 1.</p>
+ 
+
+  <p>
+    The argument principle is a spectacular theorem that informally says the following
+    (the formal version will follow momentarily): Let \( \ell:[0,a]\rightarrow \mathbb{C} \) be a Jordan curve. Let \(L:=\ell([0,a])\) be its image and \(A\) its interior. Let \( f \) be a continuous function 
+    on \(A\cup L \) that is holomorphic on \( A.\)
+    Suppose also that \( f \) has no roots on \( L \).
+    Then the number of roots of \( f \) in \( A \) (counted with multiplicities)
+    is equal to the number of times \( f(L) \) turns around the origin.
+  </p>
+
+  <div class="image-container">
+    <img id="inf-arg-prin" src="inf-arg-prin.png" alt="Illustration of the Jordan curve and indicated directions" />
+      <p style="font-size: 0.95rem; font-style: italic; color: #444; text-align: center; margin-top: 0.5rem;">
+    In this example we have two roots, on which \(f'\) is nonzero. We see that \(f(L)\) turns twice around the origin.
+  </p>
+  </div>
+  
+<div style="margin-bottom: 0.4rem;"></div>
+  
+  <p>
+    We need to formalize the above statement. Given a loop \( \ell \) that does not hit zero
+    (meaning \( \ell(t) \neq 0 \) for all \( t \)), the phrase “number of times \( \ell \) turns around the origin”
+    is not a rigorous statement. Mathematics is built on set theory, not on our visual intuition (although it is inspired and guided by it).
+    To make the phrase rigorous, we need an <a href="riemann-mapping.html">i.o</a> theorem which establishes the existence of the <em>angle function</em>
+    for a continuous path (for references containing proofs of the i.o. theorems used in this article, see the final section <a href="riemann-mapping.html">here</a>).
+  </p>
+
+  <div class="theorem-box">
+    <span class="label">Theorem 1.</span>
+    <span class="content">For every continuous path \( p:[0,a] \rightarrow \mathbb{C} \) that does not hit zero, 
+      there exists a unique continuous function \( \theta_p:[0,a] \rightarrow \mathbb{R} \) such that:</span>
+    <ul>
+      <li>
+        For all \( t \in [0,a] \), we have
+        \[
+          \theta_p(t) \equiv \text{Arg}(p(t)) \pmod{2\pi}
+        \]
+      </li>
+      <li>
+        \( \theta_p(0) \in [0, 2\pi) \).
+      </li>
+    </ul>
+  </div>
+
+  <div class="image-container">
+    <img id="angle" src="angle-func.png" alt="Illustration of the angle function" />
+  </div>
+
+  <p>
+    We call \( \theta_p \) the <em>angle function</em> of \( p \). Note that, as illustrated in the figure above,
+     continuity may require \( \theta_p \) to take values outside of \([0, 2\pi)\). Let \( \Delta \theta_p := \theta_p(a) - \theta_p(0) \). 
+     This is the total angle swept out by \( p \). In the figure above \( \Delta \theta_p = 9\pi/4 \).
+  </p>
+
+  <p>
+    From Theorem 1, it follows that if \( \ell: [0,a] \to \mathbb{C} \) is a loop that does not hit zero,
+    then \( \Delta \theta_\ell \) is an integer multiple of \( 2\pi \). For such a loop, we call the integer
+    \[
+      W(\ell, 0) := \frac{\Delta \theta_\ell}{2\pi}
+    \]
+    the <em>winding number</em> of \( \ell \) around zero. This is the number of times \( \ell \)
+     “turns around the origin.” Now, for a point \( z_0 \in \mathbb{C} \) and a loop \( \ell \) that does not hit \( z_0 \),
+    we define
+    \[
+      W(\ell, z_0) := W(\ell - z_0, 0)
+    \]
+    where \( \ell - z_0 \) is the loop \( \ell \) translated by \( -z_0 \).
+  </p>
+
+  <p>
+    There is one thing left to formalize the argument principle:
+     we need to define what a positively oriented Jordan curve is. We begin with an observation:
+  </p>
+  
+  <p>
+    <strong>Proposition 1.</strong>
+    If \( p:[0,a] \to \mathbb{C} \) is a continuous path that does not hit zero, then the <em>reverse path</em> 
+    \( \bar{p}:[0,a] \to \mathbb{C} \), defined as \( \bar{p}(t) := p(a - t) \), satisfies \(\Delta \theta_{\bar{p}} = -\Delta \theta_p.\)
+  </p>
+  
+  <p>
+    Exercise: use Theorem 1 to prove Proposition 1. 
+    Now, we will need the following i.o. theorem. This theorem uses the 
+    concept of continuous deformation of loops. If you are unaware of this term, click <a href="homotopy.html">here</a>. 
+  
+  <div class="theorem-box">
+    <span class="label">Theorem 2.</span>
+    <span class="content">Let \( \ell:[0,a] \rightarrow \mathbb{C} \) be a Jordan curve. Then,
+       \(W(\ell, z_0)\) is the same for all \(z_0 \in A_\ell\), 
+      and is equal to \(\pm 1\). If it is \(+1\), then we say that
+      \(\ell\) is <em>positively oriented</em>, otherwise we say it is <em>negatively oriented</em>.  Furthermore, 
+      let \( \ell_0:[0,b] \rightarrow \mathbb{C} \) be another Jordan curve lying entirely within \( A_\ell \)
+       and having the same orientation as \(\ell\). Let \( L_0 := \ell_0([0,b]) \). 
+      Then, \( \ell_0 \) can be continuously deformed 
+      into \( \ell \) in a way that all intermediate loops are Jordan curves lying in \( A_\ell  
+      \setminus (A_{\ell_0} \cup L_0 ) \ \) and having \(\ell\)'s orientation.
+    </span>
+  </div>
+  
+  <div class="iframe-container">
+    <iframe src="Jordan-def.html" width="300" height="300" frameborder="1"></iframe>
+    <p style="font-size: 0.95rem; font-style: italic; color: #444; text-align: center; margin-top: 0.5rem;">
+      Click to repeat. Example of deformation from Theorem 2.
+    </p>
+  </div>
+
+  <p>
+  Note that by taking the reverse of a Jordan curve we flip its orientation.
+  </p>
+  
+  <div class="theorem-box">
+    <span class="label">Theorem 3 (Argument Principle).</span>
+    <span class="content">Let \( \ell:[0,a] \rightarrow \mathbb{C} \) be a positively oriented Jordan curve, let \(L:=\ell([0,a ]) \) be its image and \( A \) its interior. 
+      Let \( f: A \cup L \rightarrow \mathbb{C} \) be a continuous function that is holomorphic on \( A \). 
+      Suppose \( f \) has no roots on \( L \). Then,</span>
+    <div class="math-display">
+      \[
+        W(f \circ \ell, 0) = \text{number of roots of } f, \text{counting multiplicities}
+      \]
+    </div>
+  </div>
+  <h3 style="
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  text-decoration: underline;
+">
+  Proof
+</h3>
+
+
+We will first need one more i.o. theorem:
+<div class="theorem-box">
+  <span class="label">Theorem 4.</span>
+  <span class="content">
+    Let \( \ell_1 : [0,a] \rightarrow \mathbb{C} \) and \( \ell_2 : [0,b] \rightarrow \mathbb{C} \) be two loops,
+    and \( z_0 \) a point in \( \mathbb{C} \). Assume that neither \( \ell_1 \) nor \( \ell_2 \) hit \( z_0 \).
+    Then, the following are equivalent:
+  </span>
+  <ul style="margin-top: 1rem; margin-left: 2rem;">
+    <li style="margin-bottom: 0.8rem;">
+      \( \ell_1 \) can be continuously deformed to \( \ell_2 \) without hitting \( z_0 \) in the process.
+    </li>
+    <li>
+      \( W(\ell_1, z_0) = W(\ell_2, z_0) \).
+    </li>
+  </ul>
+</div>
+
+Draw some examples to intuitively convince yourself about the validity of the above theorem. 
+
+<p>
+  Now, observe that \(f\) has finitely many roots. Here is why: a standard result in introductory complex analysis is
+   that since \(f\) is not identically zero, its roots have no limit point in \(A\) 
+  (for a proof, see [1]). Now, \(f\) is continuous and nonzero on \(L\), so the roots also have no limit point in 
+  \(L\). Since \(A \cup L\) is compact, the roots are finitely many. Let's call them \(z_1, z_2, \dots, z_n\) and their respective multiplicities \(m_1, m_2, \dots, m_n\).
+</p>
+
+<p>
+We will break the proof into three steps. In each step, I first give an informal argument clarifying the underlying idea, and then I formalize it.
+
+  <h3 style="
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  
+">
+  Step 1: No roots
+</h3>
+</p>
+
+<p>
+  Suppose \(f\) has no roots in \(A\), and assume that  \(W(f \circ \ell, 0)\neq 0\). Let \(\bar{A}:= A \cup L\). 
+  From Theorem 1 <a href="riemann-mapping.html">here</a>, \(\bar{A}\) is simply connected and 
+  thus \(\ell \) can be continuously deformed to a point \(z_0 \in \bar{A} \) while staying inside \(\bar{A}\) (note that
+  \(z_0\) can be trivially expressed as a loop \(\ell_0(t)=z_0\)). Consider the images of these
+  deformations under \(f\). Since \(f\) is continuous, these images will comprise a continuous deformation of \(f \circ \ell\) to \(f(z_0)\). Since \(f\) has no roots, none of these loops hits the origin. 
+  This implies (by Theorem 4) that all of them turn around the origin \(W(f \circ \ell,0)\neq 0\) times. Since these loops
+  shrink down to \(f(z_0)\), we must have \(f(z_0)=0\) (as in the animation below), contradiction.
+</p>
+
+  <div class="iframe-container">
+    <iframe src="no-roots-contr.html" width="850" height="380" frameborder="0"></iframe>
+    <p style="font-size: 0.95rem; font-style: italic; color: #444; text-align: center; margin-top: 0.5rem;">
+      Click to play/pause.
+    </p>
+  </div>
+ 
+  <div style="margin-top: 1rem;">
+    <button onclick="toggleProof(this)" style="
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      background: none;
+      border: none;
+      color: #000;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    ">
+      For the formal argument click here.
+    </button>
+    
+    <div class="proof-box" style="
+      display: none;
+      margin-top: 1rem;
+      border-left: 4px solid #888;
+      background: #f9f9f9;
+      padding: 1rem;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-family: Georgia, serif;
+      text-align: justify;
+    ">
+      
+     Only the last phrase needs to be made formal. As we said, we have a continuous deformation of \(f \circ \ell\) to \(f(z_0)\) that does not 
+     hit the origin. From Theorem 4, \(f \circ \ell\) and the trivial loop \(\ell_0(t)=f(z_0)\) have the same winding number.
+      Since \(\Delta \theta_{\ell_0}=0\) we are done.
+
+    </div>
+  </div>
+
+  <script>
+    function toggleProof(button) {
+      const box = button.nextElementSibling;
+      const isVisible = box.style.display === 'block';
+      box.style.display = isVisible ? 'none' : 'block';
+      button.textContent = isVisible ? 'For the formal argument click here.' : 'Hide formal argument.';
+    }
+  </script>
+
+<h3 style="
+text-align: center;
+font-size: 1.3rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+
+">
+Step 2: Local argument principle
+</h3>
+
+<p>
+  We will prove the argument principle for the restriction of \(f\) on a small disc of radius \(\varepsilon>0\) centered on some root; suppose it is \(z_1\).
+</p>
+  
+  <div class="image-container">
+    <img id="local-arg" src="local-arg.png" alt="Restriction for the local argument principle" />
+  </div>
+
+  <p>
+    The corresponding circle is \(C_{z_1,\varepsilon}(t)= \varepsilon e^{i 2\pi t} + z_1\), \(t\in[0,1]\). We also denote by
+    \(D_{z_1,\varepsilon}\) and \(\bar{D}_{z_1,\varepsilon}\) the corresponding open and closed discs. Now, from Taylor's theorem we have that for \(z\) close to \(z_1\),
+    \[
+    f(z)=a(z-z_1)^{m_1}+E(z-z_1)
+  \]
+    where \(a= f^{(m_1)}(z_1)/m_1!\) and \(E\) is an error-function that is much smaller compared the leading term \(a(z-z_1)^{m_1}\). Specifically, \(E(z-z_1)\)
+    is of the order of \(|z-z_1|^{m_1+1} \ll |a| |z-z_1|^{m_1}\), for \(z\) close to \(z_1\). Now, note that if we apply the function \(a(z-z_1)^{m_1}\)
+    to the circle \(C_{z_1,\varepsilon}\), we get the circle centered at the origin and of radius \(|a|\varepsilon^{m_1}\), wrapped on itself \(m_1\) times.
+    Since \(f\circ C_{z_1,\varepsilon}\) is a small perturbation of that loop (see figure below), we have \(W(f\circ C_{z_1,\varepsilon},0)=m_1\).
+   </p>
+
+  <div class="image-container">
+    <img id="perturb" src="perturb.png" alt="Illustration of the local argument principle" />
+  </div>
+
+
+  <div style="margin-top: 1rem;">
+    <button onclick="toggleProof(this)" style="
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      background: none;
+      border: none;
+      color: #000;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    ">
+      For the formal argument click here.
+    </button>
+    
+    <div class="proof-box" style="
+      display: none;
+      margin-top: 1rem;
+      border-left: 4px solid #888;
+      background: #f9f9f9;
+      padding: 1rem;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-family: Georgia, serif;
+      text-align: justify;
+    ">
+      
+      We will show that there is an \( \varepsilon_0 > 0 \) such that for all \( \varepsilon \in (0, \varepsilon_0) \) we have 
+  \( W(f \circ C_{z_1, \varepsilon}, 0) = m_1 \). Let \( R > 0 \) such that not only the disc \( D_{z_1, R} \) is inside \(A\), 
+  but also \( \bar{D}_{z_1, 2R} \subseteq A \). The reason why we take the double radius and the closure will become 
+  apparent momentarily.
+
+
+<p>
+  Let's express \( f \) as a power series in \( D_{z_1, 2R} \). We have \(f(z) = a(z - z_1)^{m_1} + E(z - z_1)\), where 
+  \[
+  E(z - z_1) = \sum_{n \ge m_1 + 1} \frac{f^{(n)}(z_1)}{n!}(z - z_1)^n.
+  \]
+</p>
+
+<p>
+  There is a complex-analytic version of Taylor's theorem that bounds \( |E(z - z_1)| \). However, it is not part of the standard curriculum in complex analysis courses. Thus, we will prove the bound here. We start with
+</p>
+
+\[
+|E(z - z_1)| \le \sum_{n \ge m_1 + 1} \frac{|f^{(n)}(z_1)|}{n!} |z - z_1|^n.
+\]
+
+<p>
+  Cauchy's inequality [3] tells us that \(|f^{(n)}(z_1)| \le \frac{n!}{(2R)^n} M,\)
+   where \( M \) is the maximum of \( f \) on the circle \( C_{z_1, 2R} \). 
+   Observe that to apply Cauchy's inequality (as it is stated in [3]), we needed the closure of the disc to lie inside \( A \). Using the inequality,
+</p>
+
+\[
+|E(z - z_1)| \le M \sum_{n \ge m_1 + 1} \left( \frac{|z - z_1|}{2R} \right)^n.
+\]
+
+<p>
+  Now we can see why we are working with the double radius \( 2R \). It is because we can show that on the smaller disc 
+  \( D_{z_1, R} \), the error \( |E(z - z_1)| \) is bounded by a constant times \( |z - z_1|^{m_1 + 1}. \) Let's prove this. For \( z \in D_{z_1, R} \),
+</p>
+
+\[
+|E(z - z_1)| \le M \left( \frac{|z - z_1|}{2R} \right)^{m_1 + 1} \cdot \frac{1}{1 - \frac{|z - z_1|}{2R}} \le \frac{2M}{(2R)^{m_1 + 1}} |z - z_1|^{m_1 + 1}.
+\]
+
+<p>
+  Letting \( C := \frac{2M}{(2R)^{m_1 + 1}} \), we get \(|E(z - z_1)| \le C |z - z_1|^{m_1 + 1}\), on \( D_{z_1, R} \).
+</p>
+
+     <p>
+      Let \(\varepsilon_0:=\frac{|a|}{2C}\) and consider an \(\varepsilon\in(0,\varepsilon_0)\). If we apply \(a(z-z_1)^{m_1}\) to the circle \(C_{z_1,\varepsilon}\), we get
+      \(\tilde{C}(t):= a \varepsilon^{m_1}e^{i2\pi m_1 t}\ \), \(t\in[0,1]\). The following is a continuous deformation of  \(\tilde{C}\) to
+      \(f\circ C_{z_1,\varepsilon}\):
+      \[
+     \gamma(s,t):=\tilde{C}(t) + s E(\varepsilon e^{i2\pi  t}),\ \ s,t \in[0,1]
+     \]
+     </p>
+     Now note that by triangle inequality, \(|\gamma(s,t)|\ge |a| \varepsilon^{m_1}-C\varepsilon^{m_1+1}= \varepsilon^{m_1}(|a|-C\varepsilon)>0.\) Thus, 
+     \(\gamma\) does not hit the origin. Since \(W(\tilde{C},0)=m_1\), by Theorem 4, \(W(f\circ C_{z_1,\varepsilon},0)=m_1\).
+    </div>
+  </div>
+  
+  <h3 style="
+text-align: center;
+font-size: 1.3rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+
+">
+Step 3: Global argument principle
+</h3>
+
+<p>
+  First, suppose \(f\) has only one root: \(z_1\in A\). Consider a small disc \(\bar{D}_{z_1,\varepsilon}\) contained in \(A\).
+   We proved that \(W(f\circ C_{z_1,\varepsilon},0)=m_1\). From Theorem 2, we can continuously deform \(C_{z_1,\varepsilon}\) to \(\ell\) while staying in \(\bar{A}\setminus D_{z_1,\varepsilon}\). The 
+   images of these deformations do not touch the origin, and thus they all have the same winding number, as in the animation below.
+</p>
+  <div class="iframe-container">
+    <iframe src="one-root.html" width="850" height="380" frameborder="0"></iframe>
+    <p style="font-size: 0.95rem; font-style: italic; color: #444; text-align: center; margin-top: 0.5rem;">
+      Click to play/pause.
+    </p>
+  </div>
+  <p>
+    Suppose \(f\) has exactly two distinct roots \(z_1,z_2\). 
+    The idea here is to split \(\bar{A}\) into two pieces - each containing exactly one root - as in the figure below:
+  </p>
+  <div class="image-container">
+    <img src="two-roots.png" alt="Illustration of the Jordan curve and indicated directions" />
+  </div>
+  <p>
+    Let \(\ell_1:[0,1]\rightarrow \mathbb{C}\) be the positively oriented Jordan curve bounding the left piece and \(\ell_2:[0,1]\rightarrow \mathbb{C}\) the corresponding for the right piece. Let \(B\) be the
+    point where both curves start and finish, i.e., \(\ell_1(0)=\ell_1(1)=\ell_2(0)=\ell_2(1)=B\). As we see in the figure, both \(\ell_1\) and \(\ell_2\) share
+    the segment \(BC\), but they traverse it in opposite directions. From the case of one root, we know that \(W(f\circ \ell_1,0)=m_1\) and \(W(f\circ \ell_2,0)=m_2\). I claim that  
+    \(\Delta \theta_{f\circ \ell}= \Delta \theta_{f\circ \ell_1}+ \Delta \theta_{f\circ \ell_2} \).
+     To see why, consider the loop \(\ell_1 * \ell_2\) that does this: starts from \(B\),
+    goes around \(\ell_1\) and returns to \(B\), and then goes around \(\ell_2\). Let's study 
+    \(\Delta \theta_{f\circ (\ell_1 * \ell_2)}\). Since \(f\circ (\ell_1 * \ell_2)\) first 
+    traverses \(f\circ \ell_1\) and then \(f\circ \ell_2,\) 
+    we have \(\Delta \theta_{f\circ (\ell_1 * \ell_2)}= \Delta \theta_{f\circ \ell_1} + 
+    \Delta \theta_{f\circ \ell_2}\). On the other hand,
+    the back-and-forth of \(f\circ (\ell_1 * \ell_2)\) on \(f(BC)\) contributes
+     nothing on the total angle swept, and thus \(\Delta \theta_{f\circ (\ell_1 * \ell_2)}=\Delta \theta_{f\circ \ell}\). Having shown that
+    \(\Delta \theta_{f\circ \ell}= \Delta \theta_{f\circ \ell_1}+ \Delta \theta_{f\circ \ell_2} \), we get that \(W(f\circ \ell,0)=m_1+m_2\).
+  </p>
+
+  <p>
+    If we have \(n\) distinct roots, we simply extend the above cancellation idea as in the figure below:
+  </p>
+
+  <div class="image-container">
+    <img src="many-roots.png" alt="Illustration of the Jordan curve and indicated directions" />
+  </div>
+
+  <div style="margin-top: 1rem;">
+    <button onclick="toggleProof(this)" style="
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      background: none;
+      border: none;
+      color: #000;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    ">
+      For the formal argument click here.
+    </button>
+    
+    <div class="proof-box" style="
+      display: none;
+      margin-top: 1rem;
+      border-left: 4px solid #888;
+      background: #f9f9f9;
+      padding: 1rem;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-family: Georgia, serif;
+      text-align: justify;
+    ">
+      
+     
+        We first rigorously define path concatenation.
+        <p>
+          Let \( p_1 : [0,a] \rightarrow \mathbb{C} \) and
+          \( p_2 : [0,b] \rightarrow \mathbb{C} \) be continuous paths such that \( p_1(a) = p_2(0) \).
+          We define their concatenation \( p_1 * p_2 : [0, a + b] \rightarrow \mathbb{C} \) by:
+        </p>
+        
+      
+      <p style="text-align: center;">
+        \[
+        p_1 * p_2(t) =
+        \begin{cases}
+          p_1(t), & \text{if } t \in [0, a] \\
+          p_2(t - a), & \text{if } t \in [a, a + b]
+        \end{cases}
+        \]
+      </p>
+      We inductively define the concatenation \( p_1 * p_2*\dots p_n\) of continuous paths with matching endpoints.
+      <p>
+        <strong>Proposition 2.</strong> Let \( p_i : [0, a_i] \rightarrow \mathbb{C} \), for \( 1 \leq i \leq k \), be \( k \) continuous paths such that
+          \( p_{i+1}(0) = p_i(a_i) \) for all \( 1 \leq i \leq k-1 \). Suppose that no \( p_i \) hits the origin. Then
+      
+        <div class="math-display">
+          \[
+            \Delta \theta_{p_1 * p_2 * \dots * p_k} = \sum_{i=1}^k \Delta \theta_{p_i}
+          \]
+        </div>
+    
+
+       </p>
+       Proposition 2 follows from Theorem 1 (why?). 
+       <p>
+        
+          Also, note that if \( p_1, p_2, \dots, p_k \) are continuous paths with matching endpoints such that they all lie inside \( \bar{A} \), then
+        
+        
+        <div class="math-display" id="eq1">
+          \[
+            f \circ (p_1 * p_2 * \dots * p_k) = (f \circ p_1) * (f \circ p_2) * \dots * (f \circ p_k)
+          \tag{1}
+          \]
+        </div>
+        
+        <p>
+          Furthermore, if \( p \) is a continuous path inside \( \bar{A} \), then
+        </p>
+        
+        <div class="math-display" id="eq2">
+          \[
+            f \circ \bar{p} = \overline{f \circ p} 
+            \tag{2}
+          \]
+        </div>
+        
+        <p>
+          where, remember, \( \bar{p} \) denotes the reverse of \( p \).
+        </p>
+        
+        We now use an i.o. theorem that tells us that the splitting in the above figure is indeed possible. 
+
+      
+          <p>
+            <strong>Theorem 5.</strong> Let \( \ell : [0,a] \to \mathbb{C} \) be a positively oriented Jordan curve and \( A \) its interior.
+            Let \( z_1, z_2, \dots, z_n \) be distinct points in \( A \). Then, there exist 
+            \( 0 < t_1 < t_2 < \dots < t_{n-1} < a \) and continuous paths 
+            \( p_1, p_2, \dots, p_{n-1} : [0,1] \to \mathbb{C} \) that satisfy the following:
+         
+          
+          <ul>
+            <li>
+              For all \( i \), \( p_i(0) = \ell(0) \) and \( p_i(1) = \ell(t_i) \).
+            </li>
+            <li>
+              For all \( i \), \( \ell_i((0,1)) \subseteq A \).
+            </li>
+            <li>
+              Let 
+              \[
+              \ell_1 := \ell \big|_{[0,t_1]} * \bar{p}_1, \quad 
+              \ell_2 := p_1 * \ell \big|_{[t_1,t_2]} * \bar{p}_2, \quad \dots, \quad
+              \ell_n := p_{n-1} * \ell \big|_{[t_{n-1},a]}.
+              \]
+              Each \( \ell_i \) is a positively oriented Jordan curve. Furthermore, each \( z_j \) belongs to the
+               interior of exactly one \( \ell_i \), and to the exterior of all the others.
+            </li>
+          </ul>
+        </p>
+        
+        <p>
+          We are now ready to complete the proof of the argument principle. We apply Theorem 5 to our setting. Let \( \ell_{\pi(i)} \) be the Jordan curve corresponding
+           to the root \( z_i \). We previously saw that Theorems 2 and 4 imply that \( W(f \circ \ell_{\pi(i)}, 0) = m_i \). Thus,
+        </p>
+        
+        <p style="text-align: center;">
+          \[
+            \sum_{i=1}^n m_i = \sum_{i=1}^n W(f \circ \ell_i, 0) = \frac{1}{2\pi} \sum_{i=1}^n \Delta \theta_{f \circ \ell_i}
+          \]
+        </p>
+        
+        <p>
+          Using Propositions 1 and 2 and equations (1) and (2), we get
+        </p>
+        
+        <p style="text-align: center;">
+          \[
+            \sum_{i=1}^n \Delta \theta_{f \circ \ell_i} = \sum_{i=1}^n \Delta \theta_{f \circ \ell|_{[t_{i-1}, t_i]}}
+          \]
+        </p>
+        
+        <p>
+          where \( t_0 = 0 \), \( t_n = a \). The last sum is equal to \( \Delta \theta_{f \circ \ell} = 2\pi W(f \circ \ell, 0) \).
+        </p>
+        
+       </p>
+
+    </div>
+  </div>
+
+  <h3 style="margin-top: 3rem; text-align: left;">References</h3>
+<ol style="line-height: 1.6; font-size: 1.05rem;">
+  <li>Complex Analysis, Elias M. Stein and Rami Shakarchi. Chapter 2, Theorem 4.8.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Taylor%27s_theorem#Taylor's_theorem_in_complex_analysis" target="_blank">Taylor's Theorem in Complex Analysis (Wikipedia)</a></li>
+   <li>Complex Analysis, Elias M. Stein and Rami Shakarchi. Chapter 2, Corollary 4.3.</li>
+
+  <!-- Add more references below as needed -->
+  
+</ol>
+
+  <p><a href="topics.html">← Back to Topics</a></p>
+
+</body>
+</html>

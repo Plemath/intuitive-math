@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Random Walk Hits Curve (Exact Intersection)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  </head>
+  <body>
+    <script>
+      let curveVertices = [];
+      let particle;
+      let hit = false;
+      let scaleFactor = 200;
+      let eps = 0.08;    // step size
+      let circ_size = 3;
+
+      function setup() {
+        createCanvas(800, 600);
+        randomSeed(1239465);
+        frameRate(1);
+        curveVertices = originalCurveVertices();
+        particle = { x: 0, y: 0 };
+        background(255);
+        drawCurve();
+
+        // initial current node in red
+        noStroke();
+        fill(255, 0, 0);
+        circle(width/2, height/2, circ_size);
+      }
+
+      function draw() {
+        if (hit) return;
+
+        // remember old current
+        let oldX = particle.x,
+            oldY = particle.y;
+
+        // pick a random direction
+        let dir = floor(random(4));
+        let dx = dir === 0 ?  eps
+               : dir === 1 ? -eps
+               : 0;
+        let dy = dir === 2 ?  eps
+               : dir === 3 ? -eps
+               : 0;
+
+        let newX = oldX + dx,
+            newY = oldY + dy;
+
+        // stop if the walk‐segment crosses the curve
+        if (walkIntersectsCurve({x:oldX, y:oldY}, {x:newX, y:newY})) {
+          console.log("Hit on the segment!");
+          hit = true;
+          noLoop();
+        }
+
+        // draw the green step
+        stroke(0, 150, 0);
+        strokeWeight(1);
+        line(
+          width/2 + oldX*scaleFactor,
+          height/2 - oldY*scaleFactor,
+          width/2 + newX*scaleFactor,
+          height/2 - newY*scaleFactor
+        );
+
+        // paint the old node black
+        noStroke();
+        fill(0);
+        circle(
+          width/2 + oldX*scaleFactor,
+          height/2 - oldY*scaleFactor,
+          circ_size
+        );
+
+        // paint the new node red
+        fill(255, 0, 0);
+        circle(
+          width/2 + newX*scaleFactor,
+          height/2 - newY*scaleFactor,
+          circ_size
+        );
+
+        // update to new current
+        particle.x = newX;
+        particle.y = newY;
+      }
+
+      function drawCurve() {
+        noFill();
+        stroke(0);
+        strokeWeight(1.5);
+        beginShape();
+        for (let v of curveVertices) {
+          let sx = width/2 + v.x*scaleFactor;
+          let sy = height/2 - v.y*scaleFactor;
+          vertex(sx, sy);
+        }
+        endShape();
+      }
+
+      function originalCurveVertices() {
+        let verts = [];
+        for (let t = -PI; t <= PI; t += 0.003) {
+          let s  = 0.4;
+          let fx = s * (1.2 * sin(t));
+          let gy = s * (1 / (1 + t*t) - cos(t) - 0.4);
+          verts.push({ x: fx, y: gy });
+        }
+        return verts;
+      }
+
+      // returns true if the walk‐segment p→p2 intersects ANY curve segment
+      function walkIntersectsCurve(p, p2) {
+        for (let i = 0; i < curveVertices.length - 1; i++) {
+          let a = curveVertices[i],
+              b = curveVertices[i+1];
+          if (segmentsIntersect(p, p2, a, b)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      // segment–segment intersection
+      function segmentsIntersect(p, p2, q, q2) {
+        // orientation test (cross product)
+        const orient = (r, s, t) =>
+          (s.x - r.x)*(t.y - r.y) - (s.y - r.y)*(t.x - r.x);
+
+        // check if point t lies on segment r→s
+        const onSegment = (r, s, t) =>
+          t.x >= min(r.x, s.x) && t.x <= max(r.x, s.x) &&
+          t.y >= min(r.y, s.y) && t.y <= max(r.y, s.y);
+
+        let o1 = orient(p,  p2, q),
+            o2 = orient(p,  p2, q2),
+            o3 = orient(q,  q2, p),
+            o4 = orient(q,  q2, p2);
+
+        // proper intersection
+        if ((o1 > 0) !== (o2 > 0) && (o3 > 0) !== (o4 > 0)) return true;
+
+        // colinear & overlapping edge cases
+        if (o1 === 0 && onSegment(p, p2, q))  return true;
+        if (o2 === 0 && onSegment(p, p2, q2)) return true;
+        if (o3 === 0 && onSegment(q, q2, p))  return true;
+        if (o4 === 0 && onSegment(q, q2, p2)) return true;
+
+        return false;
+      }
+    </script>
+  </body>
+</html>

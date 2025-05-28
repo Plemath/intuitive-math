@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Homotopy Diagram with f(z)=e^z Transformation</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      background: #fff;
+      font-family: Georgia, serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+    }
+    #leftCanvas, #rightCanvas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 300px;
+      height: 300px;
+    }
+    .arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .arrow img {
+      max-height: 90px;
+    }
+    canvas {
+      border: 1.5px solid #ccc;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="leftCanvas"></div>
+    <div class="arrow">
+      <img src="f-arrow.png" alt="f arrow" />
+    </div>
+    <div id="rightCanvas"></div>
+  </div>
+
+  <script>
+    function makeSketch(containerId, transform) {
+      return function(p) {
+        let a = 0;
+        let progress = 0;
+        const duration = 90;
+        let animating = true;
+
+        p.setup = function() {
+          p.createCanvas(300, 300).parent(containerId);
+          p.frameRate(30);
+        };
+
+        function originalCurveVertices() {
+          let vertices = [];
+          for (let t = -Math.PI; t <= Math.PI; t += 0.02) {
+            let fx = 1.2 * p.sin(t);
+            let gy = 1 / (1 + 4 * t * t) - p.cos(t) - 0.4;
+            vertices.push({ x: fx, y: gy });
+          }
+          return vertices;
+        }
+
+        function fTransform(x, y) {
+          let expx = Math.exp(x);
+          let newX = 0.7 * expx * Math.cos(y);
+          let newY = 0.7 * expx * Math.sin(y) + 0.3;
+          return { x: newX, y: newY };
+        }
+
+        p.draw = function() {
+          p.background(255);
+          if (transform) {
+            p.translate(p.width / 2 - 100, p.height / 2);
+          } else {
+            p.translate(p.width / 2, p.height / 2);
+          }
+          p.scale(100, -100);
+
+          let vertices = originalCurveVertices();
+
+          let staticVertices = vertices.map(v => {
+            return transform ? fTransform(v.x, v.y) : { x: v.x, y: v.y };
+          });
+
+          let deformedVertices = vertices.map(v => {
+            let x = (1 - a) * v.x;
+            let y = (1 - a) * v.y;
+            return transform ? fTransform(x, y) : { x: x, y: y };
+          });
+
+          p.stroke(200);
+          p.strokeWeight(0.01);
+          p.noFill();
+          p.beginShape();
+          staticVertices.forEach(v => {
+            p.vertex(v.x, v.y);
+          });
+          p.endShape();
+
+          if (animating) {
+            progress++;
+            let tVal = Math.min(progress, duration) / duration;
+            a = tVal;
+            if (progress >= duration) {
+              animating = false; // stop after first loop
+              a = 1;
+            }
+          }
+
+          p.stroke(0);
+          p.strokeWeight(0.01);
+          p.noFill();
+          p.beginShape();
+          deformedVertices.forEach(v => {
+            p.vertex(v.x, v.y);
+          });
+          p.endShape();
+
+          if (transform) {
+            p.push();
+            p.resetMatrix();
+            p.fill(0);
+            p.noStroke();
+            p.ellipse(50, 150, 5, 5);
+            p.textSize(18);
+            p.textAlign(p.LEFT, p.BOTTOM);
+            p.text("O", 31, 170);
+            p.pop();
+          }
+        };
+
+        p.mousePressed = function() {
+          if (!animating) {
+            progress = 0;
+            a = 0;
+            animating = true;
+          }
+        };
+      };
+    }
+
+    new p5(makeSketch('leftCanvas', false));
+    new p5(makeSketch('rightCanvas', true));
+  </script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dirichlet problem: a probabilistic solution</title>
+
+  <!-- MathJax polyfill + MathJax itself (unchanged) -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* ——— page styling ——— */
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background-color: #fdfdfd;
+      color: #222;
+      line-height: 1.7;
+      font-size: 1.15rem;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1 { font-size: 2rem; text-align: center; margin-bottom: 2rem; font-weight: bold; }
+    p  { text-align: justify; }
+
+    /* theorem boxes, images, etc. — unchanged */
+    .theorem-box   { border-left: 4px solid #3e9a89; background:#fff; padding:1.2rem 1.5rem; margin:1.5rem 0;
+                     box-shadow:0 2px 8px rgba(0,0,0,.06); font-size:1.15rem; text-align:justify; }
+    .theorem-box .label   { font-weight:bold; display:inline; margin-right:.5rem; }
+    .theorem-box .content { font-style:italic; display:inline; }
+    .theorem-box ul { margin:.5rem 0; padding-left:2rem; }
+    .theorem-box ul li { list-style:disc; margin-bottom:.5rem; padding-left:1.5rem; text-indent:0; }
+
+    .math-display { text-align:center; margin:1.2rem 0; }
+    a { text-decoration:underline; color:#222; }
+    a:hover { color:#555; }
+  
+    .image-container { text-align:center; margin:2rem auto; }
+    .image-container img,
+    .image-container video {                    /* video shares same centering rules */
+      max-width:50%; height:auto; display:block; margin:0 auto;
+    }
+    .theorem-box mjx-container[display="true"] {
+      margin-top: 1rem !important;
+      margin-bottom: 0.3rem !important;
+    }
+  .iframe-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .random-walk{
+  width:300px;      /* exactly the canvas size */
+  height:300px;
+  border:1px solid #ccc;
+}
+
+    /* individual images */
+    #local-arg-princ,#inf-arg-prin,#perturb { max-width:75%; height:auto; margin:1rem auto 2rem; }
+    #cones          { max-width:30%; height:auto; margin:1rem auto 2rem; }
+    #def-cones      { max-width:20%; height:auto; margin:.5rem auto; }
+    #line           { max-width:65%; height:auto; margin:.5rem auto; }
+    #rw1            { max-width:35%; height:auto; margin:.5rem auto; cursor:pointer; } /* <- cursor shows it's clickable */
+    #cone-cond      { max-width:30%; height:auto; margin:.5rem auto; transform:translateX(-.25rem); }
+    #angle          { max-width:45%; height:auto; margin:1rem auto 2rem; }
+    #local-arg      { max-width:43%; height:auto; margin:1rem auto 2rem; }
+  </style>
+</head>
+
+  <h1>Dirichlet problem: a probabilistic solution</h1>
+
+  
+<p>The Dirichlet problem for Laplace equation – or Dirichlet problem for short – is one of the most important partial 
+  differential equations. It goes as follows:</p>
+
+<div class="theorem-box">
+  <span class="label">Dirichlet problem.</span>
+  <span class="content">We are given a bounded open set \( A \subseteq \mathbb{R}^n \), and a continuous function \( g:\partial A \to \mathbb{R} \). The goal is to construct a function \( u: A \cup \partial A \to \mathbb{R} \), that is continuous on its domain, and 
+    <a href="https://en.wikipedia.org/wiki/Harmonic_function" target="_blank">harmonic</a> on \( A \).
+  </span>
+</div>
+
+<p>
+We will momentarily state a theorem that says that the Dirichlet problem has a unique solution, under a mild assumption on the set \( A \). There is a very intuitive way to prove this fact, using <em>probability theory</em>. 
+Even though the full proof requires an advanced concept called <em>Brownian motion</em>, the core idea can be described in elementary terms, and the solution can also be constructed in a fully elementary way.
+This article is mainly for people who haven't studied Brownian motion, but want to understand the proof's main idea, along with the beautiful connection with probability theory. The probability prerequisites here are basic,
+and are covered in the first weeks of an elementary probability course.
+</p>
+
+<p>
+The theorem will introduce a new term: that of a <em>regular</em> set. Immediately after, we discuss when a set is regular.
+</p>
+
+<div class="theorem-box">
+  <span class="label">Theorem 1.</span>
+  <span class="content">
+    If the set \( A \) is regular, then the Dirichlet problem has a unique solution.
+  </span>
+</div>
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.7rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Regular sets
+</h3>
+<p>
+  Even though we will not give here the full definition of a regular set, we will mention some sufficient conditions which imply regularity.
+  These will showcase that pretty much all sets met in practice are regular. We start with a definition.
+</p>
+
+<p>
+  <strong>Definition of truncated cone.</strong>
+  In \( \mathbb{R}^2 \), a truncated cone is simply a circular sector with angle between zero and 90 degrees.
+  In \( \mathbb{R}^3 \), a truncated cone is the intersection of a cone with a ball centered on the cone's apex.
+  The following figure shows examples of the two cases.
+
+
+<div class="image-container">
+  <img id="cones" src="truncated cones.png" alt="Illustration of the Jordan curve and indicated directions" />
+</div>
+
+<p>
+  In \( \mathbb{R}^n \), we define a truncated cone with apex at the origin to be the set
+</p>
+
+<p style="text-align: center;">
+  \( \Gamma = \left\{ y \in \mathbb{R}^n : \alpha \|y\| < y \cdot \gamma,\ \|y\| < r \right\} \)
+</p>
+
+<p>
+  This set is parameterized by a unit vector \( \gamma \), and two numbers \( \alpha \in (0,1) \) and \( r > 0 \).
+  The interpretation is that we take the intersection of the open ball centered at the origin with radius \( r \), and a certain cone.
+  Which cone? The one that contains all vectors \( y \) whose angle with \( \gamma \) has cosine at least \( \alpha \).
+  I.e., the angle is at most \( \arccos(\alpha) \).
+</p>
+
+<div class="image-container">
+  <img id="def-cones" src="definition-trunc-cone.png" alt="Illustration of the Jordan curve and indicated directions" />
+</div>
+
+
+<p> A truncated cone with apex at a point \(x\) is a set \(x+\Gamma:=\left\{ x+y : y\in \Gamma \right\} \).</p>
+</p>
+
+<p>
+  <strong>The cone condition.</strong> We say that an open set \(A\subseteq \mathbb{R}^n\) satisfies the <em>cone condition</em>
+  if for every \(x\in \partial A\), there exists a truncated cone with apex at \(x\), that is disjoint from \(A\).
+</p>
+
+<div class="image-container">
+  <img id="cone-cond" src="cone-cond.png" alt="Illustration of the Jordan curve and indicated directions" />
+</div>
+
+<p> The first sufficient condition for regularity is this: if an open set \( A\subseteq \mathbb{R}^n \) satisfies the cone condition, then it is regular. Another condition (for two dimensions) is this:
+</p>
+
+<p>
+  <strong>Interiors of Jordan curves.</strong> If an open set \( A \subseteq \mathbb{R}^2\) is the interior of a <a href="argument-principle.html">Jordan curve</a>, then it is regular. Observe that such
+  a set does not need to satisfy the cone condition (consider for example the shape of a heart).
+</p>
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.7rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+The main idea
+</h3>
+<p>
+  Proving Theorem 1 is done in two parts. The first is to show that a solution exists. The second is to show that we can't 
+have two different solutions. The second is the easy part, and will be done in the last section of the article. We will now see
+the main idea for proving the first part. Specifically, the proof of existence is done in two steps.
+</p>
+
+
+<ol>
+  <li>
+    Construction of a candidate solution \( u \), for which we have good reasons to believe it is a solution.
+  </li>
+  <li>
+    Proof that this \( u \) is indeed a solution.
+  </li>
+</ol>
+<p>The heart of the proof is step one. The second step, even though it requires considerable technical work, 
+it is not that creative. Together, we will see the first step, and at the end I will say a few things about the second. 
+
+We will first show how to construct the candidate solution for the case where \(A\) lies in \(\mathbb{R}^2\) and is the interior of a Jordan curve
+\(\ell:[0,a]\rightarrow \mathbb{R}^2\). After that, the generalization will be immediate. We start by interpreting the <em>Laplacian</em> of \(u\), i.e., the function \(\Delta u.\)
+</p>
+
+
+<h4 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.43rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+What does the Laplacian <em>mean</em>?
+</h4>
+<p>
+  In the case of one variable, the Laplacian is just the second derivative.
+  Let \( f : \mathbb{R} \to \mathbb{R} \) be twice differentiable.
+  Then,
+</p>
+
+<p style="text-align: center;">
+  \[f''(x_0) = \lim_{\varepsilon \to 0} \frac{ \frac{f(x_0 + \varepsilon) + f(x_0 - \varepsilon)}{2} - f(x_0) }{ \varepsilon^2/2 } \]
+</p>
+
+<p>
+  This formula can be proven using Taylor's theorem. It gives an interpretation of the second derivative,
+  i.e., the second derivative at \( x_0 \) measures how much \( f \) at \( x_0 \) differs from its average value at two symmetric neighboring points, close to \( x_0 \).
+</p>
+
+<p>
+  Applying this formula to the second partial derivatives, we can write the Laplacian as:
+</p>
+
+<p style="text-align: center;">
+\[
+\begin{align*}
+\Delta u(x_0, y_0)
+&= \frac{\partial^2 u}{\partial x^2}(x_0, y_0)
+  + \frac{\partial^2 u}{\partial y^2}(x_0, y_0) \\
+& \hspace{-1.8em} = \lim_{\varepsilon \to 0} \frac{1}{\varepsilon^2 / 4}\Bigg(
+  \frac{u(x_0 + \varepsilon, y_0) + u(x_0 - \varepsilon, y_0)+u(x_0, y_0 + \varepsilon) + u(x_0, y_0 - \varepsilon)}{4} - u(x_0, y_0) 
+\Bigg)
+\end{align*}
+\]
+</p>
+<p>Thus, the Laplacian at \((x_0,y_0)\) measures how much \(u\) at \((x_0,y_0)\) differs from its average value at four symmetric neighboring points (right, left, up, and down), close to \((x_0,y_0)\). The formula also tells us that if
+   \(u\) is \(C^2\), then the difference from the average will be \(O(\varepsilon^2)\). But, if \(u\) is harmonic, then it will be \(o(\varepsilon^2)\). 
+   So, intuitively a function is harmonic if at every point its value is very close to its average
+  on such symmetric close neighboring points.</p>
+
+  <p> Remember, our quest is to construct a candidate solution. When we want to solve a tough problem, a useful strategy is to consider a similar one that is easier. 
+    By solving it, we will get new ideas about how to attack the original one. The simpler problem here will be the <em>discrete Dirichlet problem</em>.
+  </p>
+
+  <h4 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.43rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+The discrete Dirichlet problem
+</h4>
+<p>
+Previously our space was \(\mathbb{R}^2\). Here it will be \(\mathbb{Z}^2\), i.e., the set of pairs of integers. Let \((i,j)\in \mathbb{Z}^2\). When we refer
+to the <em>neighboring</em> points of \((i,j)\), we mean the right, left, up, and down neighbors, i.e., the points \((i\pm 1, j)\) and \((i , j\pm 1)\).
+We begin with a definition.
+</p>
+<p>
+ <strong>Definition.</strong> A Jordan curve is called <em>\(\mathbb{Z}^2\)-Jordan curve</em> if it consists exclusively of line segments connecting neighboring points of \(\mathbb{Z}^2\).
+</p>
+
+<div class="image-container">
+  <img id="cone-cond" src="Z2-jordan.png" alt="Illustration of the Jordan curve and indicated directions" />
+   <p style="font-size: 0.95rem; font-style: italic; color: #444; text-align: center; margin-top: 0.5rem;">
+    Example of a \(\mathbb{Z}^2\)-Jordan curve.
+  </p>
+</div>
+<p> In the discrete Dirichlet problem, we are given a \(\mathbb{Z}^2\)-Jordan curve. Let \(L\) be the set of points of \(\mathbb{Z}^2\) that lie on that curve, and
+  let \(A\) be the set of points of \(\mathbb{Z}^2\) that lie in its interior. We are also given a function \(g:L\rightarrow \mathbb{R}\). The 
+  goal is to find a \(u:A\cup L\rightarrow \mathbb{R}\) which is equal to \(g\) on \(L\), and also for all \((i,j)\in A\),
+  \[
+u_{i,j}=\frac{1}{4}\left(u_{i+1,j}+u_{i-1,j}+u_{i,j+1}+u_{i,j-1}\right) \tag{1}
+\]
+<p>
+  The last condition is inspired by the interpretation of the Laplacian. In the continuous version it holds in the form of a limit, while here it is an equality. Observe 
+  that for each concept of the continuous Dirichlet problem, we have an analogous concept for the discrete, with the exception of the continuity of \(g\) and \(u\). We
+  don't have an analogous concept for continuity here. The following theorem shows that there is no need for one:
+</p>
+
+<div class="theorem-box">
+  <span class="label">Theorem 2.</span>
+  <span class="content">
+   The discrete Dirichlet problem has a unique solution.
+  </span>
+</div>
+
+<p> We will only prove the existence here, since our goal is to show the analogous statement for the continuous problem. The uniqueness for the discrete problem
+  will not be used anywhere in the article. To prove the existence, we will construct a solution using probability theory, and in particular <em>random walks</em>. 
+  If the reader has studied random walks, then they can skip the next subsection. 
+</p>
+
+  <h4 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.2rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Example of a random walk
+</h4>
+
+
+<div class="image-container">
+  <img id="line" src="line.png" alt="Illustration of the Jordan curve and indicated directions" />
+</div>
+
+ <p>
+    Consider the above segment, ranging from 1 to 10. Suppose we are at number 3, and we randomly jump to a neighbor, i.e., we go to 2 with probability 1/2 and to 4 with probability 1/2. Suppose we end up jumping to 4. Then, we jump again: to 3 or to 5, and we keep going like that. We stop when we reach the 1 or 10.
+  </p>
+
+  <p>
+    The question we want to answer is this: starting from 3, what is the probability of ending up at 1? We call this event \( S_1 \), and the goal is to compute \( P_3[S_1] \), where the subscript 3 indicates that we start at 3.
+  </p>
+
+  <p>
+    To compute this, we first generalize our notation: we denote by \( P_n[S_1] \) the probability of ending up at 1, if we start from the number \( n \). Thus, \( P_1[S_1] = 1 \) and \( P_{10}[S_1] = 0 \). For the other \( 1 < n < 10 \), we get from the law of total probability:
+  </p>
+
+  <p>
+    \[
+    P_n[S_1] = \frac{1}{2} P_n[S_1 \mid n \to n+1] + \frac{1}{2} P_n[S_1 \mid n \to n-1]
+    \]
+  </p>
+
+  <p>
+    where \( n \to n+1 \) means that at the first move we go from \( n \) to \( n+1 \), and the same for the other transition. Observe that the probabilities on the right-hand side are simply \( P_{n-1}[S_1] \) and \( P_{n+1}[S_1] \). By denoting with \( a_n := P_{n}[S_1] \), we get:
+  </p>
+
+  <p>
+    \[
+    a_n = \frac{1}{2} a_{n-1} + \frac{1}{2} a_{n+1} \tag{2}
+    \]
+  </p>
+
+  <p>
+    while \( a_1 = 1 \), \( a_{10} = 0 \). Thus, we have eight equations with eight unknowns. If you solve this system (you don't need to do this now; this is not the point), you will discover that the solution is unique, and in particular \( a_3 = \frac{7}{9} \).
+  </p>
+
+  <p>
+    The important thing in this example is not the result, but the form of equation (2)! It looks suspiciously similar to equation (1). We will use this connection to prove the existence part for the discrete Dirichlet problem.
+  </p>
+
+  <h4 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.2rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Solution of the discrete Dirichlet problem
+</h4>
+<p>
+  Fix a point \( (i,j) \in A \). We define \( u_{i,j} \) as follows: we will do a random walk starting from \( (i,j) \),
+  i.e., we will jump to one of its neighbors — right, left, up or down — with probability \( \frac{1}{4} \) each.
+  After we jump, we do it again. We will stop when we reach a point on the boundary.
+  Below we see an example of such a random walk.
+</p>
+
+<div class="image-container">
+  <video id="rw1" class="looping" preload="auto" muted playsinline loop>
+  <source src="rw4.mp4" type="video/mp4">
+</video>
+  <p style="text-align:center;font-size:.95rem;font-style:italic;color:#444;margin-top:.5rem;">
+    Click to pause&nbsp;/&nbsp;resume.
+  </p>
+</div>
+
+
+
+
+<p>
+  Continuing with the definition of \(u_{i,j}\), let \(G_{i,j}\) denote the value of \(g\) at the boundary point reached by the walk (the subscript indicates the starting point and the capital \(G\) emphasizes that this is a random variable).
+  We define
+</p>
+
+<p style="text-align:center;">
+  \[
+    u_{i,j} := \mathbb{E}[G_{i,j}] \tag{3}
+  \]
+</p>
+<p>
+Note that we could easily write a Python program to approximate this expectation, 
+simply by running the random walk multiple times and averaging the values
+ of \(g\) encountered at the boundary each time. Also, note that the definition of \(u_{i,j}\) in (3), even 
+ though we did it for \((i,j)\)'s in the interior,
+by extending it to the boundary, we immediately satisfy the condition of \(u\) being equal to \(g\) there. 
+This is because a random walk starting on the boundary will immediately end.
+To establish that this \(u\) is a solution, we need to prove (1). Let \((i,j)\in A\). 
+By the <a href="https://en.wikipedia.org/wiki/Law_of_total_expectation" target="_blank"> law of total expectation</a>:
+
+</p>
+
+<p style="text-align: center;">
+  \[
+  \begin{align*}
+  \mathbb{E}[G_{i,j}] &= \frac{1}{4} \mathbb{E}[G_{i,j} \mid (i,j) \to (i+1,j)]
+  + \frac{1}{4} \mathbb{E}[G_{i,j} \mid (i,j) \to (i-1,j)] \\
+  & \ + \frac{1}{4} \mathbb{E}[G_{i,j} \mid (i,j) \to (i,j+1)]
+  + \frac{1}{4} \mathbb{E}[G_{i,j} \mid (i,j) \to (i,j-1)]
+  \end{align*}
+  \]
+</p>
+<p>where the conditioning is done on which neighbor we move to at the first step of the walk. But notice for example that the first conditional expectation on the right hand side is 
+simply \(\mathbb{E}[G_{i+1,j}]\), and similarly for the other terms. This completes the proof of (1).
+</p>
+
+  <h4 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.43rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Solution of Dirichlet problem
+</h4>
+
+<p>As we said, before constructing the solution for the general Dirichlet problem, we first do it in two dimensions, and with the set \(A\) being the boundary of a Jordan curve.
+  Inspired by the solution for the discrete problem, we do the following construction. Let \(x_0\in A\), and let \(\varepsilon>0\) small. Starting from \(x_0\), we do a 
+  random walk of step \(\varepsilon\), where each step is right/left/up/down. When we do the step, we connect the current point with the previous with a linear segment, so that we have a continuous curve. We stop when
+  this random curve hits the boundary for the first time, as in the animation below.
+
+</p>
+
+
+<div class="image-container">
+  <video id="sol1" class="looping" preload="auto" muted playsinline loop>
+  <source src="sol1.mp4" type="video/mp4">
+</video>
+  <p style="text-align:center;font-size:.95rem;font-style:italic;color:#444;margin-top:.5rem;">
+    Click to pause&nbsp;/&nbsp;resume.
+  </p>
+</div>
+
+
+
+
+   <p>Let \(G_{x_0}^{(\varepsilon)}\) be the value of \(g\) at the point we hit the boundary. We define
+    </p>
+
+    <p style="text-align:center;">
+  \[
+    u(x_0) := \lim_{\varepsilon \to 0} \mathbb{E}[G_{x_0}^{(\varepsilon)}] \tag{4}
+  \]
+</p>
+
+
+
+
+<p>
+  It can be proven that this \(u\) is indeed a solution. Before we say a couple of things about the proof, we will discuss an equivalent way to express it.
+</p>
+
+ <h4 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.2rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Equivalent expression via Brownian motion
+</h4>
+<p>
+  In probability theory, it is possible to define a random continuous curve, that starts from a point \(x_0\), and it is &mdash; in a certain sense &mdash; the limit
+of the above random walks as \(\varepsilon \to 0\). This random curve is called <em>Brownian motion</em>, and in the animation below, we see one realization of it.
+</p>
+
+
+<div class="image-container">
+  <video id="brown" class="looping" preload="auto" muted playsinline loop>
+  <source src="brownian.mp4" type="video/mp4">
+</video>
+  <p style="text-align:center;font-size:.95rem;font-style:italic;color:#444;margin-top:.5rem;">
+    Click to pause&nbsp;/&nbsp;resume.
+  </p>
+</div>
+<p>
+  If we let \(G_{x_0}\) to denote the value of \(g\) that the Brownian motion will meet the first time it hits the boundary, then it can be proven that
+
+    \[
+    u(x_0) = \mathbb{E}[G_{x_0}] \tag{5}
+  \]
+  
+</p>
+
+<p>
+  <strong>Proving that (4) is indeed a solution.</strong> The modern way of doing this is by passing through Brownian motion. The high-level steps are 1) define Brownian motion, 2) prove some of its basic properties, 3) prove that (5) is a solution, and 4) prove that the expressions (4) and (5) are the same.
+  Given this proof, the consideration of expression (4) seems unnecessary, since on the way of proving that it is a solution, we already establish the existence of one. 
+  However, the value of this expression is that a student with elementary probability knowledge can completely understand it.
+</p>
+
+<p>
+  <strong>General Dirichlet problem.</strong> Until now, we were working in two dimensions. Let \(A\subseteq \mathbb{R}^n\) be an open and bounded set, and let \(g:\partial A\rightarrow \mathbb{R}\) be a continuous function.
+  The construction (4) immediately generalizes: instead of having four options at each step, we now have \(2n\).
+   The Brownian motion–based construction also generalizes easily, as does the proof outlined above (assuming that \(A\) is regular).
+  For the proof, the reader can consult [1].
+</p>
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.7rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Uniqueness
+</h3>
+
+<p>
+  Let \( A \subseteq \mathbb{R}^n \) be open and bounded (we won't need to assume regularity here).
+  Let \( g : \partial A \to \mathbb{R} \) be continuous.
+  We will show that we cannot have two different solutions to the Dirichlet problem.
+  To do this, we first prove two basic properties of harmonic functions.
+  Let \( \bar{B}_{x_0,r} \) denote the closed ball in \( \mathbb{R}^n \),
+  centered at \( x_0 \), and of radius \( r \).
+</p>
+
+<div class="theorem-box">
+  <span class="label">Proposition 1. (Mean-value property)</span>
+  <span class="content">
+    Let \( A \subseteq \mathbb{R}^n \) be open and \( u : A \to \mathbb{R} \) a harmonic function.
+    Let \(x_0,r\) such that \( \bar{B}_{x_0,r} \subseteq A \). Then,
+    \[
+    \mathbb{E}_{x \sim \bar{B}_{x_0,r}}[u(x)] = u(x_0)
+    \quad \text{and} \quad
+    \mathbb{E}_{x \sim \partial \bar{B}_{x_0,r}}[u(x)] = u(x_0)
+    \]
+  </span>
+</div>
+
+<p>
+  The proposition says that if a ball is inside \( A \), then the average of \( u \) on the ball
+  (or on the sphere) equals its value at the center. Let's take a moment to appreciate this statement.
+  Previously we saw that the average of \( u \) on the \( \varepsilon \)-neighbors of \( x_0 \)
+  along the axes (4 neighbors in two dimensions, \( 2n \) neighbors in \( n \) dimensions)
+  is very close to \( u(x_0) \).
+  Here, we see that if the neighborhood is chosen to be a whole sphere or a ball (centered at \( x_0 \)),
+  then we have exact equality.
+  Furthermore, this neighborhood does not need to be close to \( x_0 \); the radius \( r \) is arbitrary!
+</p>
+
+
+<div style="margin-top: 1rem;">
+    <button onclick="toggleProof(this)" style="
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      background: none;
+      border: none;
+      color: #000;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    ">
+      For the proof of Proposition 1, click here.
+    </button>
+    
+    <div class="proof-box" style="
+      display: none;
+      margin-top: 1rem;
+      border-left: 4px solid #888;
+      background: #f9f9f9;
+      padding: 1rem;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-family: Georgia, serif;
+      text-align: justify;
+    ">
+  For this proof, we will do the argument for \(n=2\), since some readers might be unfamiliar with surface integrals in \(\mathbb{R}^n\), for \(n>3\). The rest of the readers can 
+     generalize the proof as an exercise.
+    
+
+
+<p>
+  We will first show that the average on the circle \(\mathbb{E}_{x \sim \partial \bar{B}_{x_0,r}}[u(x)] = u(x_0)\). This expectation can be written as
+  \(\mathbb{E}_{\theta \sim [0,2\pi)} \left[ u(x_0 + r v_\theta) \right]\), where \(v_\theta = (\cos\theta, \sin\theta)\).
+</p>
+
+<p>Let’s take its derivative with respect to the radius:</p>
+
+\[
+\begin{aligned}
+\frac{d}{dr} \mathbb{E}_{\theta \sim [0,2\pi)} [u(x_0 + r v_\theta)]
+&= \frac{d}{dr}  \frac{1}{2\pi} \int_0^{2\pi} u(x_0 + r v_\theta) \, d\theta  \\
+&= \frac{1}{2\pi} \int_0^{2\pi} \frac{d}{dr} u(x_0 + r v_\theta) \, d\theta \\
+&= \frac{1}{2\pi} \int_0^{2\pi} \nabla u(x_0 + r v_\theta) \cdot v_\theta \, d\theta
+\end{aligned}
+\]
+
+<p>
+If we multiply and divide the last integral by \( r \), we get:
+</p>
+
+\[
+\frac{1}{2\pi r} \int_0^{2\pi} \nabla u(x_0 + r v_\theta) \cdot v_\theta \  r \, d\theta
+\]
+
+<p>
+Notice that this last integral is the flux of the vector field \( \nabla u \) along the circle \( \partial \bar{B}_{x_0,r} \).
+By the divergence theorem, it equals:
+</p>
+
+\[
+\int_{\bar{B}_{x_0,r}} \nabla \cdot \nabla u(x) \, dx = \int_{\bar{B}_{x_0,r}} \Delta u(x) \, dx = 0
+\]
+
+<p>
+Thus, the average of \( u \) over the circle does not change with \( r \). Sending \( r \to 0 \) and using the continuity of \( u \), we get that the average on the circle equals \( u(x_0) \).
+</p>
+
+<p>
+Now, to show the same for the average on the disc, we express it as an average over averages on the circles that make up the disc:
+</p>
+
+\[
+\begin{aligned}
+\frac{1}{\pi r^2} \int_{\bar{B}_{x_0,r}} u(x) \, dx
+&= \frac{1}{\pi r^2} \int_0^r \int_0^{2\pi} u(x_0 + \rho v_\theta) \, \rho \, d\theta \, d\rho \\
+&= \frac{2}{r^2} \int_0^r \rho \left( \frac{1}{2\pi} \int_0^{2\pi} u(x_0 + \rho v_\theta) \, d\theta \right) d\rho \\
+&= \frac{2}{r^2} \int_0^r \rho  \  u(x_0) \, d\rho = u(x_0)
+\end{aligned}
+\]
+    </div>
+  </div>
+
+  <script>
+    function toggleProof(button) {
+      const box = button.nextElementSibling;
+      const isVisible = box.style.display === 'block';
+      box.style.display = isVisible ? 'none' : 'block';
+      button.textContent = isVisible ? 'For the formal argument click here.' : 'Hide proof.';
+    }
+  </script>
+
+
+
+<div class="theorem-box">
+  <span class="label">Proposition 2. (Maximum principle)</span>
+  <span class="content">
+    Let \( A \subseteq \mathbb{R}^n \) be open and bounded, and let \( u : A\cup \partial A \to \mathbb{R} \) continuous on its domain, and
+    harmonic on \(A\). Then, \(u\) takes its maximum and minimum values on the boundary \(\partial A\).
+  </span>
+</div>
+
+<p>
+  Note that Proposition 2 does not exclude the possibility that the extreme values are attained in the interior. However, they must also be attained at the boundary.
+</p>
+
+
+
+<div style="margin-top: 1rem;">
+    <button onclick="toggleProof(this)" style="
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      background: none;
+      border: none;
+      color: #000;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    ">
+      For the proof of Proposition 2, click here.
+    </button>
+    
+    <div class="proof-box" style="
+      display: none;
+      margin-top: 1rem;
+      border-left: 4px solid #888;
+      background: #f9f9f9;
+      padding: 1rem;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      font-family: Georgia, serif;
+      text-align: justify;
+    ">
+    We give the proof for the maximum (for the minimum we can just apply the same argument for \(-u\)). Also, this proof is fully-general; not like in the case of Proposition 1, where we showed it for \(n=2\).
+    
+
+
+<p>
+  Since \( u \) is continuous on a compact set, it takes a maximum value. Let's call it \( M \).
+  Suppose that it attains it at a point \( x_0 \in A \), i.e., \( u(x_0) = M \).
+  Consider a ball \( \bar{B}_{x_0,r} \) that is contained in \( A \).
+  I claim that \( u \) is equal to \( M \) at all points of the ball.
+</p>
+
+<p>Here is why: from the mean-value property,</p>
+
+\[
+\frac{1}{\text{vol}(\bar{B}_{x_0,r})} \int_{\bar{B}_{x_0,r}} u(x) \, dx = u(x_0) = M \tag{6}
+\]
+
+<p>
+Now, each term inside the integral is at most \( M \).
+If there is an \( x_1 \in \bar{B}_{x_0,r} \) with value \( u(x_1) < M \),
+then by continuity there is a neighborhood of \( x_1 \) where \( u \le (u(x_1) + M)/2 \).
+This implies that the average in (6) is less than \( M \), contradiction.
+</p>
+
+<p>
+Thus, \( u \) is equal to \( M \) on the whole ball.
+Now, remember that since \( u \) is continuous on a compact set, it is also uniformly continuous.
+So, by taking a large enough ball (centered at \( x_0 \)) that
+1) lies inside \( A \), and
+2) there exists a point \( y \) of the boundary that is close to the surface of the ball,
+we conclude that \( u(y) \) must be close to \( M \).
+</p>
+
+
+But, the restriction \( u|_{\partial A} \) of \( u \) on the boundary is a continuous function on a compact set,
+and so it has a maximum value.
+Thus, this value must be \( M \).
+
+    
+    </div>
+  </div>
+
+  <script>
+    function toggleProof(button) {
+      const box = button.nextElementSibling;
+      const isVisible = box.style.display === 'block';
+      box.style.display = isVisible ? 'none' : 'block';
+      button.textContent = isVisible ? 'For the formal argument click here.' : 'Hide proof.';
+    }
+  </script>
+
+<p>
+  The uniqueness follows immediately from the maximum principle: suppose we have two solutions \(u_1,u_2\). Then, \(u_1-u_2\) is zero on the boundary,
+  it is continuous on \(A\cup \partial A\), and is harmonic on \(A\). Thus, \(u_1-u_2=0\).
+</p>
+<h3 style="margin-top: 3rem; text-align: left;">References</h3>
+<ol style="line-height: 1.6; font-size: 1.05rem;">
+  <li>Probability: Theory and Examples, Rick Durrett. Chapters 7.1-7.3 and 9.5. The proof that (4) and (5) give the same solution, can be done using Skorokhod embedding (see [2], Theorem 3.5.1).   </li>
+  <li>Random Walk: A Modern Introduction, Gregory Lawler and Vlada Limic.</li>
+
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* autoplay + click-to-pause/play for every looping video */
+  document.querySelectorAll('video.looping').forEach(vid => {
+    vid.play().catch(() => {});
+    vid.addEventListener('click', () => {
+      vid.paused ? vid.play() : vid.pause();
+    });
+  });
+});
+</script>
+
+</body>
+</html>

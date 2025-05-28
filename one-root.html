@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Homotopy Diagram with f(z)=z²+0.2*z³ Transformation Centered at (1,0)</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.2/lib/p5.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      background: #fff;
+      font-family: Georgia, serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+    }
+    #leftCanvas, #rightCanvas {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 300px;
+      height: 300px;
+    }
+    .arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      border: 1.5px solid #ccc;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="leftCanvas"></div>
+    <div class="arrow">
+      <img src="f-arrow.png" alt="f arrow" style="max-height: 90px;" />
+    </div>
+    <div id="rightCanvas"></div>
+  </div>
+
+  <script>
+    function makeSketch(containerId, transform) {
+      return function(p) {
+        let a = 0;
+        let progress = 0;
+        const duration = 90;
+        let animating = true;
+        const c = 0.26;
+
+        p.setup = function() {
+          p.createCanvas(300, 300).parent(containerId);
+          p.frameRate(30);
+        };
+
+        function originalCurveVertices() {
+          let vertices = [];
+          for (let t = -Math.PI; t <= Math.PI; t += 0.02) {
+            let s = 0.4;
+            let fx = s * (1.2 * p.sin(t));
+            let gy = s * (1 / (1 + t * t) - p.cos(t) - 0.4);
+            vertices.push({ x: fx, y: gy });
+          }
+          return vertices;
+        }
+
+        function fTransform(x, y) {
+          let k = 0.7;
+          let l = 7;
+          let real = l * ((x * x - y * y) + k * (x * x * x - 3 * x * y * y));
+          let imag = l * ((2 * x * y) + k * (3 * x * x * y - y * y * y));
+          return { x: real, y: imag };
+        }
+
+        p.draw = function() {
+          p.background(255);
+          if (transform) {
+            p.translate(p.width / 2 - 100, p.height / 2);
+            p.scale(100, -100);
+            p.translate(c, 0);
+          } else {
+            p.translate(p.width / 2, p.height / 2);
+            p.scale(270, -270);
+            p.drawingContext.lineWidth = 0.002;
+          }
+
+          let vertices = originalCurveVertices();
+
+          let staticVertices = vertices.map(v =>
+            transform ? fTransform(v.x, v.y) : { x: v.x, y: v.y }
+          );
+
+          let deformedVertices = vertices.map(v => {
+            let s = 0;
+            let vx = v.x + s;
+            let len = Math.sqrt(vx * vx + v.y * v.y);
+            let eps = 0.1;
+            let r = 1 + (1 - a) * eps / len - (1 - a);
+            let x = r * vx - s;
+            let y = r * v.y;
+            return transform ? fTransform(x, y) : { x: x, y: y };
+          });
+
+          // Static curve (gray)
+          p.stroke(200);
+          p.strokeWeight(transform ? 0.01 : 0.005);
+          p.noFill();
+          p.beginShape();
+          staticVertices.forEach(v => {
+            p.vertex(v.x, v.y);
+          });
+          p.endShape();
+
+          // Animate loop
+          if (animating) {
+            progress++;
+            let tVal = (progress % duration) / duration;
+            a = tVal;
+          }
+
+          // Moving curve (black)
+          p.stroke(0);
+          p.strokeWeight(transform ? 0.01 : 0.005);
+          p.noFill();
+          p.beginShape();
+          deformedVertices.forEach(v => {
+            p.vertex(v.x, v.y);
+          });
+          p.endShape();
+
+          // Origin markers
+          p.push();
+          p.resetMatrix();
+          p.fill(0);
+          p.noStroke();
+          if (transform) {
+            p.ellipse(76, 150, 5, 5);
+          } else {
+            p.ellipse(150, 150, 5, 5);
+          }
+          p.pop();
+        };
+
+        // Toggle animation on click
+        p.mousePressed = function() {
+          animating = !animating;
+        };
+      };
+    }
+
+    new p5(makeSketch('leftCanvas', false));
+    new p5(makeSketch('rightCanvas', true));
+  </script>
+</body>
+</html>

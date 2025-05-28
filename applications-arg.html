@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Applications of argument principle: open and biholomorphic maps</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background-color: #fdfdfd;
+      color: #222;
+      line-height: 1.7;
+      font-size: 1.15rem;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: bold;
+    }
+    
+    p {
+      text-align: justify;
+    }
+    
+    /* Theorem Box Styles */
+    .theorem-box {
+      border-left: 4px solid #3e9a89;
+      background-color: #fff;
+      padding: 1.2rem 1.5rem;
+      margin: 2rem 0 1.2rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      font-size: 1.15rem;
+      text-align: justify;
+    }
+    
+    /* Theorem header/label and content now as inline elements */
+    .theorem-box .label {
+      font-weight: bold;
+      display: inline;
+      margin-right: 0.5rem;
+    }
+    
+    .theorem-box .content {
+      font-style: italic;
+      display: inline;
+      /* Remove any left margin */
+      margin-left: 0;
+    }
+    
+    /* Bullet lists inside theorem boxes maintain their own formatting */
+    .theorem-box ul {
+      margin: 0.5rem 0;
+      padding-left: 2rem;
+    }
+    
+    .theorem-box ul li {
+  list-style: disc; /* Use disc bullets */
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  text-indent: 0;
+}
+
+    
+    .math-display {
+      text-align: center;
+      margin: 1.2rem 0;
+    }
+    
+    a {
+      text-decoration: underline;
+      color: #222;
+    }
+    
+    a:hover {
+      color: #555;
+    }
+    
+    .iframe-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    
+    .image-container {
+      text-align: center;
+      margin: 2rem auto;
+    }
+    
+    .image-container img {
+      max-width: 50%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    #local-arg-princ,
+    #inf-arg-prin,
+    #perturb{
+      max-width: 75%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+    }
+
+    #angle{
+      max-width: 45%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+    }
+
+    #local-arg {
+  max-width: 43%; /* or set exact width like 500px */
+  height: auto;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+  </style>
+</head>
+<body>
+
+  <h1>Applications of argument principle</h1>
+ <p>
+We will prove two theorems using the argument principle. We begin by showing a corollary of it, as well as a useful proposition. The corollary says that
+  the argument principle can be generalized to count the number of points that \(f\) maps to a specific complex number \(q\). In the original version, \(q\) was zero.
+ </p> 
+
+<div class="theorem-box">
+    <span class="label">Corollary 1.</span>
+    <span class="content">Let \( \ell:[0,a] \rightarrow \mathbb{C} \) be a positively oriented Jordan curve, \(L:=\ell([0,a ]) \) denote its image, and \( A \) its interior. 
+      Let \( f: A \cup L \rightarrow \mathbb{C} \) be a continuous function that is holomorphic on \( A \), and let \(q\in \mathbb{C}\).
+      Suppose \( f(z)\neq q \) on \( L \). Then,</span>
+    <div class="math-display">
+      \[
+        W(f \circ \ell, q) = \text{number of points } z \text{ on } A \text{ such that } f(z)=q, \text{ counting multiplicities.}
+      \]
+    </div>
+     <span class="content">
+    The multiplicity of such a point \(z\) is defined as the minimum \(k\ge 1\) such that \(f^{(k)}(z)\neq 0\).
+    </span>
+  </div>
+
+  <p>
+    The corollary is immediately obtained by applying the argument principle on \(f(z)-q\), and observing that 
+\[W((f-q) \circ \ell, 0)=W(f \circ \ell-q, 0)= W(f \circ \ell, q)\]
+  </p>
+<p>
+  From now on, whenever we say "argument principle", we mean its general version, given in Corollary 1.
+</p>
+  <div style="margin-top: 3.4rem;"></div>
+
+  <div class="theorem-box">
+    <span class="label">Proposition 1.</span>
+    <span class="content">Let \( \ell:[0,1] \rightarrow \mathbb{C} \) be a loop, and \(z_0,z_1\) be two distinct points in \(\mathbb{C}\), such
+      that the closed line segment \([z_0,z_1]\) that connects them does not intersect \(\ell([0,1])\). Then, \(W(\ell,z_0)=W(\ell,z_1)\).
+    </span>
+  </div>
+
+  <h3 style="
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: bold;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  text-decoration: underline;
+">
+  Proof
+</h3>
+<p>
+Let \(z(s):= (1-s)z_0+sz_1\), for \(s\in[0,1]\). This is a parametrization of \([z_0,z_1]\). From the definition of winding number, we have
+
+<div class="math-display" >
+  \[
+  W(\ell,z(s))=W(\ell-(z(s)-z_0), z_0)
+  \]
+</div>
+Now, consider the deformation 
+<div class="math-display" >
+  \[
+  \gamma(s,t):= \ell(t)- (z(s)-z_0)
+  \]
+</div>
+where \(s,t\in[0,1]\). Since \(\ell([0,1])\cap [z_0,z_1]=\emptyset\), the deformation \(\gamma\) does not hit \(z_0\).
+ Theorem 4 from <a href="argument-principle.html">here</a> completes the proof. \(\ \square\)
+</p>    
+     
+<div class="theorem-box">
+  <span class="label">Theorem 1. (Open mapping theorem)</span>
+  <span class="content"> 
+    Let \( A \subseteq \mathbb{C} \) open and connected, and let \( f : A \rightarrow \mathbb{C} \) be a non-constant holomorphic function. 
+    Then \( f \) is an open map; that is, it sends open subsets of \( A \) to open subsets of \( \ \mathbb{C} \).
+
+  </span>
+</div>
+
+<h3 style="
+text-align: center;
+font-size: 1.35rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: underline;
+">
+Proof
+</h3>
+
+<p>Consider an open set \( B \subseteq A \). We will show that for any \( z_0 \in B \), the point \( f(z_0) \) 
+  lies in the interior of \( f(B) \). This immediately implies that \( f(B) \) is open.</p>
+
+  <p>Fix a \( z_0 \in B \). Without loss of generality, we assume that \( f(z_0) = 0 \).
+     As in the proof of the argument principle, since \( f \) is non-constant, the point \( z_0 \) is an isolated root. 
+     Take \( \varepsilon > 0 \), so that the closed disc \( \overline{D}_{z_0,\varepsilon} \) ,
+      centered at \( z_0 \) and of radius \( \varepsilon \), lies in \( B \) and does not contain any other root of \( f \).
+
+ Its positively oriented boundary is the circle \( C_{z_0, \varepsilon}(t) = \varepsilon e^{i2\pi t} + z_0 \), \( \ t \in [0,1] \). 
+ Arguing exactly as in the proof of the local version of the argument principle, 
+ we get that on the image space there exists a small open disc \( D_{0,\delta} \) that does not intersect the loop \( f \circ C_{z_0,\varepsilon} \).
+Thus, Proposition 1 implies that for all \( q \in D_{0,\delta} \ \), </p>
+
+<div class="math-display" >
+  \[
+  W(f \circ C_{z_0,\varepsilon}\ , 0) = W(f \circ C_{z_0,\varepsilon}\ , q)
+  \]
+</div>
+
+
+
+<p>
+  By the argument principle, for any \( q \in D_{0,\delta} \), there is a \( z \in D_{z_0,\varepsilon} \) such that \( f(z) = q \). 
+  Thus, \( D_{0,\delta} \subseteq f(B) \). \(\ \square\)
+</p>
+
+<h3 id= "Biholomorphism" style="
+text-align: center;
+font-size: 1.35rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: none;
+">
+Biholomorphisms
+</h3>
+<p>
+  We remind the reader the definition of a <em>biholomorphism</em>. Let \(A, B\subseteq \mathbb{C}\) open. If a holomorphism \(f:A\rightarrow B\) is a bijection, then we say that \(f\) is a biholomorphism.
+</p>
+  
+<div class="theorem-box">
+  <span class="label">Theorem 2.</span>
+  <span class="content"> 
+   Let \(f:A\rightarrow B\) a biholomorphism. Then \(f'(z)\neq 0\) for all \(z\in A\), and the inverse \(f^{-1}: B\rightarrow A \ \) is also holomorphic.
+  </span>
+</div>
+
+
+
+<h3 style="
+text-align: center;
+font-size: 1.35rem;
+font-weight: bold;
+margin-top: 2.5rem;
+margin-bottom: 1rem;
+text-decoration: underline;
+">
+Proof
+</h3>
+
+
+
+  <p>
+    Suppose there is a \( z_0 \in A \) such that \( f'(z_0) = 0 \). Since \( f \) is injective, the roots of \( f' \) are isolated. 
+    Let \( \varepsilon > 0 \), such that the closed disc \( \overline{D}_{z_0,\varepsilon} \) is inside \( A \), 
+    and also does not contain any other root of \( f' \). Again because of injectivity, the loop \( f \circ C_{z_0,\varepsilon} \) 
+    does not hit \( f(z_0) \). Combining this with the fact that \( f'(z_0) = 0 \), by the argument principle:
+  </p>
+
+  <p style="text-align: center;">
+    \[
+    W\left( f \circ C_{z_0,\varepsilon} \ ,  f(z_0) \right) \ge 2
+    \]
+  </p>
+
+  <p>
+    Now, arguing exactly as in the proof of the local version of the argument principle, 
+    we get that if we choose a \( z_1 \in D_{z_0,\varepsilon} \) that is different from \( z_0 \)
+    but close enough to it, then the segment \([f(z_0), f(z_1)]\) does not intersect the loop 
+    \( f \circ C_{z_0,\varepsilon} \). Thus, from Proposition 1:
+  </p>
+
+  <p style="text-align: center;">
+    \[
+    W\left( f \circ C_{z_0,\varepsilon} \ , f(z_1) \right) \ge 2
+    \]
+  </p>
+
+  <p>
+    Since \( f'(z_1) \neq 0 \), by the argument principle there is another
+     \( z_2 \in D_{z_0,\varepsilon} \) such that \( f(z_2) = f(z_1) \), contradiction.
+
+  </p>
+
+  <p>
+    Now we show that \( f^{-1} \) is holomorphic. Take two distinct points \( w, w_0 \in B \), and let \( z := f^{-1}(w) \) and \( z_0 := f^{-1}(w_0) \). 
+    By Theorem 1, \( f^{-1} \) is continuous. Thus, as \( w \to w_0 \) we have \( z \to z_0 \ \), and so
+  </p>
+
+  <p style="text-align: center;">
+    \[
+    \lim_{w \to w_0} \frac{f^{-1}(w) - f^{-1}(w_0)}{w - w_0}
+    = \lim_{z \to z_0} \frac{z - z_0}{f(z) - f(z_0)}
+    = \frac{1}{f'(z_0)}
+    \]
+  </p>
+
+  <p>
+    Thus, \( f^{-1} \) is holomorphic with 
+    \( (f^{-1})'(w) = 1/f'(f^{-1}(w)) \). \(\ \square\)
+  </p>
+
+</body>
+</html>

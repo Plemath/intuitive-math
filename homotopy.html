@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About – Intuitive Mathematics</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background-color: #fdfdfd;
+      color: #222;
+      line-height: 1.7;
+      font-size: 1.15rem;
+      padding: 2rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: bold;
+    }
+
+    p {
+      text-align: justify;
+    }
+
+    .image-container {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .image-container img {
+      max-width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 1.1rem;
+    }
+
+    .back-link a {
+      text-decoration: underline;
+      color: #222;
+    }
+
+    .back-link a:hover {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h4 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.2rem;">Continuous deformation of loops</h4>
+
+  <p>
+    Let \( \ell_1, \ell_2 : [0,1] \rightarrow \mathbb{C} \) be two loops (the case of general parameter intervals will be addressed momentarily).
+    A continuous deformation from \( \ell_1 \) to \( \ell_2 \) is a continuous function 
+    \[
+    \gamma : [0,1] \times [0,1] \rightarrow \mathbb{C}
+  \]
+   
+    such that \( \gamma(0,t) = \ell_1(t) \), \( \gamma(1,t) = \ell_2(t) \) for all \( t \in [0,1] \), and also \( \gamma(s,0) = \gamma(s,1) \)
+    for all \( s \in [0,1] \).
+  </p>
+  
+  <p>
+    If \( \ell_1 : [0,a] \rightarrow \mathbb{C} \) and \( \ell_2 : [0,b] \rightarrow \mathbb{C} \) are two loops,
+    then a continuous deformation from \( \ell_1 \) to \( \ell_2 \) is defined to be a continuous deformation
+    from \( \tilde{\ell}_1 \) to \( \tilde{\ell}_2 \), where
+    \( \tilde{\ell}_1, \tilde{\ell}_2 : [0,1] \rightarrow \mathbb{C} \) are the reparametrizations:
+    \( \tilde{\ell}_1(t) := \ell_1(a t) \) and \( \tilde{\ell}_2(t) := \ell_2(b t) \).
+  </p>
+
+</body>
+</html>
